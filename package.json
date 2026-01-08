@@ -21,6 +21,14 @@
     "README.md"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pschroee/redmine-mcp.git"
+  },
+  "homepage": "https://github.com/pschroee/redmine-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/pschroee/redmine-mcp/issues"
+  },
   "publishConfig": {
     "access": "public"
   },
