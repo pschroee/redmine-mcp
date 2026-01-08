@@ -1,17 +1,15 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { RedmineClient } from "../redmine/client.js";
+import { registerAccountTools } from "./account.js";
+import { registerCoreTools } from "./core.js";
+import { registerFilesTools } from "./files.js";
+import { registerMetadataTools } from "./metadata.js";
+import { registerRelationsTools } from "./relations.js";
+import { registerSearchTools } from "./search.js";
+import { registerWikiTools } from "./wiki.js";
 
 // Tool registration function type
 export type ToolRegistrationFn = (server: McpServer, client: RedmineClient) => void;
-
-// Placeholder functions - will be replaced in Phase 4
-const registerCoreTools: ToolRegistrationFn = () => {};
-const registerMetadataTools: ToolRegistrationFn = () => {};
-const registerWikiTools: ToolRegistrationFn = () => {};
-const registerFilesTools: ToolRegistrationFn = () => {};
-const registerRelationsTools: ToolRegistrationFn = () => {};
-const registerSearchTools: ToolRegistrationFn = () => {};
-const registerAccountTools: ToolRegistrationFn = () => {};
 
 export const toolGroups: Record<string, ToolRegistrationFn> = {
   core: registerCoreTools,

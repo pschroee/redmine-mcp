@@ -1,0 +1,166 @@
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { z } from "zod";
+import type { RedmineClient } from "../redmine/client.js";
+
+export function registerRelationsTools(
+  server: McpServer,
+  client: RedmineClient
+): void {
+  // === ISSUE RELATIONS ===
+
+  server.tool(
+    "list_issue_relations",
+    "List all relations for an issue",
+    {
+      issue_id: z.number().describe("The issue ID"),
+    },
+    async (params) => {
+      const result = await client.listIssueRelations(params.issue_id);
+      return {
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+      };
+    }
+  );
+
+  server.tool(
+    "get_relation",
+    "Get details of a specific relation",
+    {
+      relation_id: z.number().describe("The relation ID"),
+    },
+    async (params) => {
+      const result = await client.getRelation(params.relation_id);
+      return {
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+      };
+    }
+  );
+
+  server.tool(
+    "create_issue_relation",
+    "Create a relation between two issues",
+    {
+      issue_id: z.number().describe("The source issue ID"),
+      issue_to_id: z.number().describe("The target issue ID"),
+      relation_type: z.enum([
+        "relates",
+        "duplicates",
+        "duplicated",
+        "blocks",
+        "blocked",
+        "precedes",
+        "follows",
+        "copied_to",
+        "copied_from",
+      ]).describe("Type of relation"),
+      delay: z.number().optional().describe("Delay in days (only for precedes/follows)"),
+    },
+    async (params) => {
+      const { issue_id, ...data } = params;
+      const result = await client.createIssueRelation(issue_id, data);
+      return {
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+      };
+    }
+  );
+
+  server.tool(
+    "delete_relation",
+    "Delete an issue relation",
+    {
+      relation_id: z.number().describe("The relation ID to delete"),
+    },
+    async (params) => {
+      const result = await client.deleteRelation(params.relation_id);
+      return {
+        content: [{ type: "text", text: JSON.stringify(result ?? { success: true }, null, 2) }],
+      };
+    }
+  );
+
+  // === VERSIONS ===
+
+  server.tool(
+    "list_versions",
+    "List all versions (milestones) for a project",
+    {
+      project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+    },
+    async (params) => {
+      const result = await client.listVersions(params.project_id);
+      return {
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+      };
+    }
+  );
+
+  server.tool(
+    "get_version",
+    "Get details of a specific version",
+    {
+      version_id: z.number().describe("The version ID"),
+    },
+    async (params) => {
+      const result = await client.getVersion(params.version_id);
+      return {
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+      };
+    }
+  );
+
+  server.tool(
+    "create_version",
+    "Create a new version (milestone) in a project",
+    {
+      project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+      name: z.string().describe("Version name"),
+      status: z.enum(["open", "locked", "closed"]).optional().describe("Version status"),
+      sharing: z.enum(["none", "descendants", "hierarchy", "tree", "system"]).optional().describe("Sharing scope"),
+      due_date: z.string().optional().describe("Due date (YYYY-MM-DD)"),
+      description: z.string().optional().describe("Version description"),
+      wiki_page_title: z.string().optional().describe("Associated wiki page"),
+    },
+    async (params) => {
+      const { project_id, ...data } = params;
+      const result = await client.createVersion(project_id, data);
+      return {
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+      };
+    }
+  );
+
+  server.tool(
+    "update_version",
+    "Update an existing version",
+    {
+      version_id: z.number().describe("The version ID to update"),
+      name: z.string().optional().describe("New version name"),
+      status: z.enum(["open", "locked", "closed"]).optional().describe("New status"),
+      sharing: z.enum(["none", "descendants", "hierarchy", "tree", "system"]).optional().describe("New sharing scope"),
+      due_date: z.string().optional().describe("New due date"),
+      description: z.string().optional().describe("New description"),
+      wiki_page_title: z.string().optional().describe("New associated wiki page"),
+    },
+    async (params) => {
+      const { version_id, ...data } = params;
+      const result = await client.updateVersion(version_id, data);
+      return {
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+      };
+    }
+  );
+
+  server.tool(
+    "delete_version",
+    "Delete a version",
+    {
+      version_id: z.number().describe("The version ID to delete"),
+    },
+    async (params) => {
+      const result = await client.deleteVersion(params.version_id);
+      return {
+        content: [{ type: "text", text: JSON.stringify(result ?? { success: true }, null, 2) }],
+      };
+    }
+  );
+}
