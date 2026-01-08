@@ -4,14 +4,18 @@
   "description": "MCP server for Redmine issues and projects",
   "type": "module",
   "bin": {
-    "redmine-mcp": "./dist/index.js"
+    "redmine-mcp": "dist/index.js"
   },
   "main": "./dist/index.js",
   "scripts": {
     "build": "tsc",
     "prepublishOnly": "npm run build"
   },
-  "keywords": ["mcp", "redmine", "claude"],
+  "keywords": [
+    "mcp",
+    "redmine",
+    "claude"
+  ],
   "files": [
     "dist",
     "README.md"
