@@ -9,11 +9,13 @@ export function registerFilesTools(
 ): void {
   // === ATTACHMENTS ===
 
-  server.tool(
+  server.registerTool(
     "get_attachment",
-    "Get metadata of a specific attachment",
     {
-      attachment_id: z.number().describe("The attachment ID"),
+      description: "Get metadata of a specific attachment",
+      inputSchema: {
+        attachment_id: z.number().describe("The attachment ID"),
+      },
     },
     async (params) => {
       const result = await client.getAttachment(params.attachment_id);
@@ -23,11 +25,13 @@ export function registerFilesTools(
     }
   );
 
-  server.tool(
+  server.registerTool(
     "delete_attachment",
-    "Delete an attachment",
     {
-      attachment_id: z.number().describe("The attachment ID to delete"),
+      description: "Delete an attachment",
+      inputSchema: {
+        attachment_id: z.number().describe("The attachment ID to delete"),
+      },
     },
     async (params) => {
       const result = await client.deleteAttachment(params.attachment_id);
@@ -37,13 +41,15 @@ export function registerFilesTools(
     }
   );
 
-  server.tool(
+  server.registerTool(
     "upload_file",
-    "Upload a file to Redmine (returns token for attaching to issues/wiki)",
     {
-      file_path: z.string().describe("Local file path to upload"),
-      filename: z.string().describe("Filename to use in Redmine"),
-      content_type: z.string().optional().describe("MIME type (auto-detected if not provided)"),
+      description: "Upload a file to Redmine (returns token for attaching to issues/wiki)",
+      inputSchema: {
+        file_path: z.string().describe("Local file path to upload"),
+        filename: z.string().describe("Filename to use in Redmine"),
+        content_type: z.string().optional().describe("MIME type (auto-detected if not provided)"),
+      },
     },
     async (params) => {
       const content = await readFile(params.file_path);
@@ -57,11 +63,13 @@ export function registerFilesTools(
 
   // === PROJECT FILES ===
 
-  server.tool(
+  server.registerTool(
     "list_project_files",
-    "List all files attached to a project",
     {
-      project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+      description: "List all files attached to a project",
+      inputSchema: {
+        project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+      },
     },
     async (params) => {
       const result = await client.listProjectFiles(params.project_id);
@@ -71,15 +79,17 @@ export function registerFilesTools(
     }
   );
 
-  server.tool(
+  server.registerTool(
     "upload_project_file",
-    "Attach an uploaded file to a project",
     {
-      project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
-      token: z.string().describe("Upload token from upload_file"),
-      version_id: z.number().optional().describe("Associated version ID"),
-      filename: z.string().optional().describe("Override filename"),
-      description: z.string().optional().describe("File description"),
+      description: "Attach an uploaded file to a project",
+      inputSchema: {
+        project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+        token: z.string().describe("Upload token from upload_file"),
+        version_id: z.number().optional().describe("Associated version ID"),
+        filename: z.string().optional().describe("Override filename"),
+        description: z.string().optional().describe("File description"),
+      },
     },
     async (params) => {
       const { project_id, ...data } = params;

@@ -8,10 +8,11 @@ export function registerMetadataTools(
 ): void {
   // === TRACKERS ===
 
-  server.tool(
+  server.registerTool(
     "list_trackers",
-    "List all available trackers (issue types like Bug, Feature, etc.)",
-    {},
+    {
+      description: "List all available trackers (issue types like Bug, Feature, etc.)",
+    },
     async () => {
       const result = await client.listTrackers();
       return {
@@ -22,10 +23,11 @@ export function registerMetadataTools(
 
   // === ISSUE STATUSES ===
 
-  server.tool(
+  server.registerTool(
     "list_issue_statuses",
-    "List all available issue statuses (New, In Progress, Closed, etc.)",
-    {},
+    {
+      description: "List all available issue statuses (New, In Progress, Closed, etc.)",
+    },
     async () => {
       const result = await client.listIssueStatuses();
       return {
@@ -36,11 +38,13 @@ export function registerMetadataTools(
 
   // === ISSUE CATEGORIES ===
 
-  server.tool(
+  server.registerTool(
     "list_issue_categories",
-    "List all issue categories for a project",
     {
-      project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+      description: "List all issue categories for a project",
+      inputSchema: {
+        project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+      },
     },
     async (params) => {
       const result = await client.listIssueCategories(params.project_id);
@@ -50,11 +54,13 @@ export function registerMetadataTools(
     }
   );
 
-  server.tool(
+  server.registerTool(
     "get_issue_category",
-    "Get details of a specific issue category",
     {
-      category_id: z.number().describe("The category ID"),
+      description: "Get details of a specific issue category",
+      inputSchema: {
+        category_id: z.number().describe("The category ID"),
+      },
     },
     async (params) => {
       const result = await client.getIssueCategory(params.category_id);
@@ -64,13 +70,15 @@ export function registerMetadataTools(
     }
   );
 
-  server.tool(
+  server.registerTool(
     "create_issue_category",
-    "Create a new issue category in a project",
     {
-      project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
-      name: z.string().describe("Category name"),
-      assigned_to_id: z.number().optional().describe("Default assignee user ID for this category"),
+      description: "Create a new issue category in a project",
+      inputSchema: {
+        project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+        name: z.string().describe("Category name"),
+        assigned_to_id: z.number().optional().describe("Default assignee user ID for this category"),
+      },
     },
     async (params) => {
       const { project_id, ...data } = params;
@@ -81,13 +89,15 @@ export function registerMetadataTools(
     }
   );
 
-  server.tool(
+  server.registerTool(
     "update_issue_category",
-    "Update an existing issue category",
     {
-      category_id: z.number().describe("The category ID to update"),
-      name: z.string().optional().describe("New category name"),
-      assigned_to_id: z.number().optional().describe("New default assignee user ID"),
+      description: "Update an existing issue category",
+      inputSchema: {
+        category_id: z.number().describe("The category ID to update"),
+        name: z.string().optional().describe("New category name"),
+        assigned_to_id: z.number().optional().describe("New default assignee user ID"),
+      },
     },
     async (params) => {
       const { category_id, ...data } = params;
@@ -98,12 +108,14 @@ export function registerMetadataTools(
     }
   );
 
-  server.tool(
+  server.registerTool(
     "delete_issue_category",
-    "Delete an issue category",
     {
-      category_id: z.number().describe("The category ID to delete"),
-      reassign_to_id: z.number().optional().describe("Category ID to reassign issues to before deletion"),
+      description: "Delete an issue category",
+      inputSchema: {
+        category_id: z.number().describe("The category ID to delete"),
+        reassign_to_id: z.number().optional().describe("Category ID to reassign issues to before deletion"),
+      },
     },
     async (params) => {
       const result = await client.deleteIssueCategory(params.category_id, params.reassign_to_id);
@@ -115,10 +127,11 @@ export function registerMetadataTools(
 
   // === CUSTOM FIELDS ===
 
-  server.tool(
+  server.registerTool(
     "list_custom_fields",
-    "List all custom field definitions (requires admin privileges)",
-    {},
+    {
+      description: "List all custom field definitions (requires admin privileges)",
+    },
     async () => {
       const result = await client.listCustomFields();
       return {
@@ -129,10 +142,11 @@ export function registerMetadataTools(
 
   // === QUERIES ===
 
-  server.tool(
+  server.registerTool(
     "list_queries",
-    "List all saved issue queries (public and private)",
-    {},
+    {
+      description: "List all saved issue queries (public and private)",
+    },
     async () => {
       const result = await client.listQueries();
       return {

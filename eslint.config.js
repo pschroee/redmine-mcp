@@ -23,6 +23,7 @@ export default tseslint.config(
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/explicit-function-return-type": "off",
       "@typescript-eslint/no-empty-function": "off",
+      "@typescript-eslint/no-deprecated": "warn",
     },
   }
 );

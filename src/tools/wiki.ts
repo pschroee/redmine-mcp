@@ -6,11 +6,13 @@ export function registerWikiTools(
   server: McpServer,
   client: RedmineClient
 ): void {
-  server.tool(
+  server.registerTool(
     "list_wiki_pages",
-    "List all wiki pages in a project",
     {
-      project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+      description: "List all wiki pages in a project",
+      inputSchema: {
+        project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+      },
     },
     async (params) => {
       const result = await client.listWikiPages(params.project_id);
@@ -20,14 +22,16 @@ export function registerWikiTools(
     }
   );
 
-  server.tool(
+  server.registerTool(
     "get_wiki_page",
-    "Get content of a specific wiki page",
     {
-      project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
-      page_name: z.string().describe("Wiki page name/title"),
-      version: z.number().optional().describe("Specific version number to retrieve"),
-      include: z.string().optional().describe("Include: attachments"),
+      description: "Get content of a specific wiki page",
+      inputSchema: {
+        project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+        page_name: z.string().describe("Wiki page name/title"),
+        version: z.number().optional().describe("Specific version number to retrieve"),
+        include: z.string().optional().describe("Include: attachments"),
+      },
     },
     async (params) => {
       const result = await client.getWikiPage(params.project_id, params.page_name, {
@@ -40,15 +44,17 @@ export function registerWikiTools(
     }
   );
 
-  server.tool(
+  server.registerTool(
     "create_wiki_page",
-    "Create a new wiki page in a project",
     {
-      project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
-      page_name: z.string().describe("Wiki page name/title (used in URL)"),
-      text: z.string().describe("Page content (supports Textile/Markdown)"),
-      comments: z.string().optional().describe("Edit comment for version history"),
-      parent_title: z.string().optional().describe("Parent page title for hierarchy"),
+      description: "Create a new wiki page in a project",
+      inputSchema: {
+        project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+        page_name: z.string().describe("Wiki page name/title (used in URL)"),
+        text: z.string().describe("Page content (supports Textile/Markdown)"),
+        comments: z.string().optional().describe("Edit comment for version history"),
+        parent_title: z.string().optional().describe("Parent page title for hierarchy"),
+      },
     },
     async (params) => {
       const { project_id, page_name, ...data } = params;
@@ -59,15 +65,17 @@ export function registerWikiTools(
     }
   );
 
-  server.tool(
+  server.registerTool(
     "update_wiki_page",
-    "Update an existing wiki page",
     {
-      project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
-      page_name: z.string().describe("Wiki page name/title"),
-      text: z.string().describe("New page content"),
-      comments: z.string().optional().describe("Edit comment for version history"),
-      version: z.number().optional().describe("Expected version for conflict detection"),
+      description: "Update an existing wiki page",
+      inputSchema: {
+        project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+        page_name: z.string().describe("Wiki page name/title"),
+        text: z.string().describe("New page content"),
+        comments: z.string().optional().describe("Edit comment for version history"),
+        version: z.number().optional().describe("Expected version for conflict detection"),
+      },
     },
     async (params) => {
       const { project_id, page_name, ...data } = params;
@@ -78,12 +86,14 @@ export function registerWikiTools(
     }
   );
 
-  server.tool(
+  server.registerTool(
     "delete_wiki_page",
-    "Delete a wiki page and all its history",
     {
-      project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
-      page_name: z.string().describe("Wiki page name/title to delete"),
+      description: "Delete a wiki page and all its history",
+      inputSchema: {
+        project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+        page_name: z.string().describe("Wiki page name/title to delete"),
+      },
     },
     async (params) => {
       const result = await client.deleteWikiPage(params.project_id, params.page_name);

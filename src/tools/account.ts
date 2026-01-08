@@ -5,10 +5,11 @@ export function registerAccountTools(
   server: McpServer,
   client: RedmineClient
 ): void {
-  server.tool(
+  server.registerTool(
     "get_my_account",
-    "Get current user account information",
-    {},
+    {
+      description: "Get current user account information",
+    },
     async () => {
       const result = await client.getMyAccount();
       return {
