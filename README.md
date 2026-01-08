@@ -1,45 +1,169 @@
-# redmine-mcp
+# Redmine MCP Server
 
-MCP server for Redmine - access issues and projects from Claude.
+A Model Context Protocol (MCP) server for interacting with Redmine project management.
 
 ## Installation
 
 ```bash
-claude mcp add redmine-mcp --scope user -- npx redmine-mcp --url https://your-redmine.com --api-key YOUR_API_KEY
+npm install -g @pschroee/mcp-server
 ```
 
-Or with environment variables:
+Or use directly with npx:
 
 ```bash
-export REDMINE_URL=https://your-redmine.com
-export REDMINE_API_KEY=your_api_key
-claude mcp add redmine-mcp --scope user -- npx redmine-mcp
+npx @pschroee/mcp-server --url=https://your-redmine.com --api-key=your-api-key
+```
+
+## Configuration
+
+### Required
+
+- `--url` or `REDMINE_URL`: Your Redmine instance URL
+- `--api-key` or `REDMINE_API_KEY`: Your Redmine API key
+
+### Optional
+
+- `--tools=<groups>`: Comma-separated list of tool groups to enable
+- `--exclude=<groups>`: Comma-separated list of tool groups to exclude
+- `--help`: Show usage information
+
+## Tool Groups
+
+| Group | Tools | Description |
+|-------|-------|-------------|
+| `core` | 14 | Issues & Projects (CRUD, watchers, archive) |
+| `metadata` | 9 | Trackers, Statuses, Categories, Custom Fields, Queries |
+| `wiki` | 5 | Wiki Pages (CRUD, versioning) |
+| `files` | 5 | Attachments & Project Files |
+| `relations` | 9 | Issue Relations & Versions |
+| `search` | 1 | Global Search |
+| `account` | 1 | Current User Account |
+
+**Total: 44 Tools**
+
+## Usage Examples
+
+### Load all tools (default)
+
+```bash
+npx @pschroee/mcp-server --url=https://redmine.example.com --api-key=abc123
+```
+
+### Load only specific groups
+
+```bash
+npx @pschroee/mcp-server --tools=core,metadata
+```
+
+### Exclude specific groups
+
+```bash
+npx @pschroee/mcp-server --exclude=wiki,files
+```
+
+## Claude Desktop Configuration
+
+Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "redmine": {
+      "command": "npx",
+      "args": [
+        "@pschroee/mcp-server",
+        "--url=https://your-redmine.com",
+        "--api-key=your-api-key"
+      ]
+    }
+  }
+}
+```
+
+### With Tool Groups
+
+```json
+{
+  "mcpServers": {
+    "redmine": {
+      "command": "npx",
+      "args": [
+        "@pschroee/mcp-server",
+        "--url=https://your-redmine.com",
+        "--api-key=your-api-key",
+        "--tools=core,metadata,search"
+      ]
+    }
+  }
+}
 ```
 
 ## Available Tools
 
-### Issues
+### Core (Issues & Projects)
 
-- `list_issues` - List issues with optional filters (project, status, assignee)
-- `get_issue` - Get details of a specific issue
-- `create_issue` - Create a new issue
-- `update_issue` - Update an existing issue
+- `list_issues` - List issues with filters and sorting
+- `get_issue` - Get issue details with optional includes
+- `create_issue` - Create new issue
+- `update_issue` - Update issue (including adding notes)
+- `delete_issue` - Delete issue
+- `add_issue_watcher` - Add watcher to issue
+- `remove_issue_watcher` - Remove watcher from issue
+- `list_projects` - List all projects
+- `get_project` - Get project details
+- `create_project` - Create new project
+- `update_project` - Update project
+- `delete_project` - Delete project
+- `archive_project` - Archive project (Redmine 5.0+)
+- `unarchive_project` - Unarchive project (Redmine 5.0+)
 
-### Projects
+### Metadata
 
-- `list_projects` - List all accessible projects
-- `get_project` - Get details of a specific project
-- `create_project` - Create a new project
-- `update_project` - Update an existing project
+- `list_trackers` - List all trackers
+- `list_issue_statuses` - List all issue statuses
+- `list_issue_categories` - List categories for a project
+- `get_issue_category` - Get category details
+- `create_issue_category` - Create category
+- `update_issue_category` - Update category
+- `delete_issue_category` - Delete category
+- `list_custom_fields` - List custom fields (admin)
+- `list_queries` - List saved queries
 
-## Configuration
+### Wiki
 
-| Option | Environment Variable | Description |
-|--------|---------------------|-------------|
-| `--url` | `REDMINE_URL` | Redmine base URL |
-| `--api-key` | `REDMINE_API_KEY` | Your Redmine API key |
+- `list_wiki_pages` - List wiki pages in project
+- `get_wiki_page` - Get wiki page content
+- `create_wiki_page` - Create wiki page
+- `update_wiki_page` - Update wiki page
+- `delete_wiki_page` - Delete wiki page
 
-CLI arguments take precedence over environment variables.
+### Files
+
+- `get_attachment` - Get attachment metadata
+- `delete_attachment` - Delete attachment
+- `upload_file` - Upload file (returns token)
+- `list_project_files` - List project files
+- `upload_project_file` - Attach file to project
+
+### Relations
+
+- `list_issue_relations` - List relations for issue
+- `get_relation` - Get relation details
+- `create_issue_relation` - Create relation
+- `delete_relation` - Delete relation
+- `list_versions` - List project versions
+- `get_version` - Get version details
+- `create_version` - Create version
+- `update_version` - Update version
+- `delete_version` - Delete version
+
+### Search
+
+- `search` - Search across Redmine
+
+### Account
+
+- `get_my_account` - Get current user info
 
 ## Getting your API Key
 
