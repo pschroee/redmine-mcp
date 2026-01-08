@@ -12,6 +12,10 @@
     "prepublishOnly": "npm run build"
   },
   "keywords": ["mcp", "redmine", "claude"],
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "license": "MIT",
   "engines": {
     "node": ">=18.0.0"
