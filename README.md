@@ -165,6 +165,22 @@ Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_
 
 - `get_my_account` - Get current user info
 
+## Development
+
+```bash
+# Install dependencies
+npm install
+
+# Run linter
+npm run lint
+
+# Fix lint errors
+npm run lint:fix
+
+# Build
+npm run build
+```
+
 ## Getting your API Key
 
 1. Log into your Redmine instance
