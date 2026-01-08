@@ -1,5 +1,5 @@
 {
-  "name": "redmine-mcp",
+  "name": "@pschroee/mcp-server",
   "version": "0.1.0",
   "description": "MCP server for Redmine issues and projects",
   "type": "module",
