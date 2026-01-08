@@ -1,16 +1,17 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { RedmineClient } from "./redmine/client.js";
-import { registerIssueTools } from "./tools/issues.js";
-import { registerProjectTools } from "./tools/projects.js";
+import { registerTools, type ToolGroup } from "./tools/index.js";
 
-export function createServer(redmineClient: RedmineClient): McpServer {
+export function createServer(
+  redmineClient: RedmineClient,
+  toolGroups: ToolGroup[]
+): McpServer {
   const server = new McpServer({
     name: "redmine-mcp",
-    version: "0.1.0",
+    version: "0.2.0",
   });
 
-  registerIssueTools(server, redmineClient);
-  registerProjectTools(server, redmineClient);
+  registerTools(server, redmineClient, toolGroups);
 
   return server;
 }
