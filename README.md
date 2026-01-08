@@ -61,7 +61,45 @@ npx @pschroee/mcp-server --tools=core,metadata
 npx @pschroee/mcp-server --exclude=wiki,files
 ```
 
-## Claude Desktop Configuration
+## Claude Configuration
+
+### Quick Setup with Claude CLI
+
+**macOS / Linux:**
+
+```bash
+claude mcp add redmine -s user -- npx -y @pschroee/mcp-server \
+  --url=https://your-redmine.com --api-key=your-api-key
+```
+
+**Windows:**
+
+```bash
+claude mcp add redmine -s user -- cmd /c npx -y @pschroee/mcp-server \
+  --url=https://your-redmine.com --api-key=your-api-key
+```
+
+### With Tool Groups
+
+**macOS / Linux:**
+
+```bash
+claude mcp add redmine -s user -- npx -y @pschroee/mcp-server \
+  --url=https://your-redmine.com --api-key=your-api-key \
+  --tools=core,metadata,search
+```
+
+**Windows:**
+
+```bash
+claude mcp add redmine -s user -- cmd /c npx -y @pschroee/mcp-server \
+  --url=https://your-redmine.com --api-key=your-api-key \
+  --tools=core,metadata,search
+```
+
+### Manual Configuration (Claude Desktop)
+
+#### macOS / Linux
 
 Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_desktop_config.json`):
 
@@ -80,7 +118,30 @@ Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_
 }
 ```
 
-### With Tool Groups
+#### Windows
+
+Add to your Claude Desktop config (`%APPDATA%\Claude\claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "redmine": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "@pschroee/mcp-server",
+        "--url=https://your-redmine.com",
+        "--api-key=your-api-key"
+      ]
+    }
+  }
+}
+```
+
+#### With Tool Groups
+
+**macOS / Linux:**
 
 ```json
 {
@@ -88,6 +149,26 @@ Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_
     "redmine": {
       "command": "npx",
       "args": [
+        "@pschroee/mcp-server",
+        "--url=https://your-redmine.com",
+        "--api-key=your-api-key",
+        "--tools=core,metadata,search"
+      ]
+    }
+  }
+}
+```
+
+**Windows:**
+
+```json
+{
+  "mcpServers": {
+    "redmine": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
         "@pschroee/mcp-server",
         "--url=https://your-redmine.com",
         "--api-key=your-api-key",
