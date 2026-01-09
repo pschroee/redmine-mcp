@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { readFile } from "fs/promises";
 import type { RedmineClient } from "../redmine/client.js";
+import { formatAttachment, formatFileList } from "../formatters/index.js";
 
 export function registerFilesTools(
   server: McpServer,
@@ -19,8 +20,13 @@ export function registerFilesTools(
     },
     async (params) => {
       const result = await client.getAttachment(params.attachment_id);
+      if ("error" in result) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
       return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        content: [{ type: "text", text: formatAttachment(result) }],
       };
     }
   );
@@ -73,8 +79,13 @@ export function registerFilesTools(
     },
     async (params) => {
       const result = await client.listProjectFiles(params.project_id);
+      if ("error" in result) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
       return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        content: [{ type: "text", text: formatFileList(result) }],
       };
     }
   );
