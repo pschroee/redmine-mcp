@@ -22,6 +22,15 @@ export const state: {
   statusOpenId: number;
   statusClosedId: number;
   priorityId: number;
+  activityId: number;
+  roleId: number;
+
+  // Test resource IDs
+  timeEntryId: number | undefined;
+  membershipId: number | undefined;
+  testUserId: number | undefined;
+  secondTestUserId: number | undefined;
+  groupId: number | undefined;
 } = {
   // Project IDs
   projectId: "",
@@ -53,4 +62,13 @@ export const state: {
   statusOpenId: 0,
   statusClosedId: 0,
   priorityId: 0,
+  activityId: 0,
+  roleId: 0,
+
+  // Test resource IDs
+  timeEntryId: undefined,
+  membershipId: undefined,
+  testUserId: undefined,
+  secondTestUserId: undefined,
+  groupId: undefined,
 };

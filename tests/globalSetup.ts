@@ -35,7 +35,7 @@ export default async function globalSetup() {
   const result = await client.createProject({
     name: `Test Project ${Date.now()}`,
     identifier,
-    enabled_module_names: ["issue_tracking", "wiki", "files"],
+    enabled_module_names: ["issue_tracking", "wiki", "files", "time_tracking"],
   });
 
   if (!result.project) {
