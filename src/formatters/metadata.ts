@@ -322,9 +322,9 @@ export function formatCustomFieldList(response: RedmineCustomFieldsResponse): st
 }
 
 /**
- * Project lookup map: ID -> name
+ * Project lookup map: ID -> { name, identifier }
  */
-export type ProjectLookup = Record<number, string>;
+export type ProjectLookup = Record<number, { name: string; identifier: string }>;
 
 /**
  * Format a list of saved queries as a Markdown table
@@ -339,17 +339,24 @@ export function formatQueryList(response: RedmineQueriesResponse, projectLookup:
   const lines: string[] = [];
   lines.push(`# Saved Queries (${queries.length})`);
   lines.push("");
-  lines.push("| ID | Name | Project | Visibility |");
-  lines.push("|----|------|---------|------------|");
+  lines.push("| ID | Name | Project | Project Identifier | Visibility |");
+  lines.push("|----|------|---------|-------------------|------------|");
 
   for (const query of queries) {
     const visibility = query.is_public ? "Public" : "Private";
-    let project = "Global";
+    let projectName = "";
+    let projectIdentifier = "";
     if (query.project_id) {
-      const projectName = projectLookup[query.project_id];
-      project = projectName ? `${projectName} (${query.project_id})` : `#${query.project_id}`;
+      const projectInfo = projectLookup[query.project_id];
+      if (projectInfo) {
+        projectName = projectInfo.name;
+        projectIdentifier = projectInfo.identifier;
+      } else {
+        projectName = `#${query.project_id}`;
+        projectIdentifier = `#${query.project_id}`;
+      }
     }
-    lines.push(`| ${query.id} | ${query.name} | ${project} | ${visibility} |`);
+    lines.push(`| ${query.id} | ${query.name} | ${projectName} | ${projectIdentifier} | ${visibility} |`);
   }
 
   return lines.join("\n");

@@ -184,14 +184,14 @@ export function registerMetadataTools(
         };
       }
 
-      // Build project lookup for resolving project names
+      // Build project lookup for resolving project names and identifiers
       const projectLookup: ProjectLookup = {};
       const projectsResult = await client.listProjects({ limit: 100 });
       let filterProjectId: number | undefined;
 
       if (!("error" in projectsResult)) {
         for (const project of projectsResult.projects) {
-          projectLookup[project.id] = project.name;
+          projectLookup[project.id] = { name: project.name, identifier: project.identifier };
           // Find the numeric ID for the filter project identifier
           if (params.project_id && project.identifier === params.project_id) {
             filterProjectId = project.id;

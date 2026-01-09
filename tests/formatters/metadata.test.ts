@@ -599,7 +599,7 @@ describe("formatQueryList", () => {
     expect(result).toBe("No queries found.");
   });
 
-  test("formats single public query", () => {
+  test("formats single public global query", () => {
     const response = {
       queries: [
         {
@@ -612,11 +612,11 @@ describe("formatQueryList", () => {
     const result = formatQueryList(response);
 
     expect(result).toContain("# Saved Queries (1)");
-    expect(result).toContain("| ID | Name | Project | Visibility |");
-    expect(result).toContain("| 1 | Open Issues | Global | Public |");
+    expect(result).toContain("| ID | Name | Project | Project Identifier | Visibility |");
+    expect(result).toContain("| 1 | Open Issues |  |  | Public |");
   });
 
-  test("formats single private query", () => {
+  test("formats single private global query", () => {
     const response = {
       queries: [
         {
@@ -628,7 +628,7 @@ describe("formatQueryList", () => {
     };
     const result = formatQueryList(response);
 
-    expect(result).toContain("| 2 | My Tasks | Global | Private |");
+    expect(result).toContain("| 2 | My Tasks |  |  | Private |");
   });
 
   test("formats query with project_id without lookup", () => {
@@ -644,7 +644,7 @@ describe("formatQueryList", () => {
     };
     const result = formatQueryList(response);
 
-    expect(result).toContain("| 3 | Project Bugs | #5 | Public |");
+    expect(result).toContain("| 3 | Project Bugs | #5 | #5 | Public |");
   });
 
   test("formats query with project_id with lookup", () => {
@@ -658,10 +658,10 @@ describe("formatQueryList", () => {
         },
       ],
     };
-    const projectLookup = { 5: "My Project" };
+    const projectLookup = { 5: { name: "My Project", identifier: "my-project" } };
     const result = formatQueryList(response, projectLookup);
 
-    expect(result).toContain("| 3 | Project Bugs | My Project (5) | Public |");
+    expect(result).toContain("| 3 | Project Bugs | My Project | my-project | Public |");
   });
 
   test("formats multiple queries with lookup", () => {
@@ -673,14 +673,14 @@ describe("formatQueryList", () => {
         { id: 4, name: "Due This Week", is_public: false, project_id: 1 },
       ],
     };
-    const projectLookup = { 1: "Main Project" };
+    const projectLookup = { 1: { name: "Main Project", identifier: "main-project" } };
     const result = formatQueryList(response, projectLookup);
 
     expect(result).toContain("# Saved Queries (4)");
-    expect(result).toContain("| 1 | All Open Issues | Global | Public |");
-    expect(result).toContain("| 2 | Assigned to Me | Global | Private |");
-    expect(result).toContain("| 3 | High Priority | Global | Public |");
-    expect(result).toContain("| 4 | Due This Week | Main Project (1) | Private |");
+    expect(result).toContain("| 1 | All Open Issues |  |  | Public |");
+    expect(result).toContain("| 2 | Assigned to Me |  |  | Private |");
+    expect(result).toContain("| 3 | High Priority |  |  | Public |");
+    expect(result).toContain("| 4 | Due This Week | Main Project | main-project | Private |");
   });
 });
 
