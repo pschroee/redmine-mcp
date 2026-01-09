@@ -13,6 +13,75 @@ export type NameLookup = Record<string, Record<string, string>>;
 const LARGE_TEXT_FIELDS = ["description"];
 
 /**
+ * Checklist item structure from JSON
+ */
+interface ChecklistItem {
+  id?: number;
+  subject: string;
+  is_done: boolean;
+  position?: number;
+}
+
+/**
+ * Format checklist changes as a readable diff
+ * Only shows items that changed between old and new state
+ */
+function formatChecklistDiff(oldValue: string, newValue: string): string {
+  let oldItems: ChecklistItem[] = [];
+  let newItems: ChecklistItem[] = [];
+
+  try {
+    oldItems = JSON.parse(oldValue || "[]");
+  } catch {
+    // Invalid JSON, fall back to raw display
+    return null as unknown as string;
+  }
+
+  try {
+    newItems = JSON.parse(newValue || "[]");
+  } catch {
+    return null as unknown as string;
+  }
+
+  // Create maps for easy lookup by subject (more reliable than ID for diffing)
+  const oldBySubject = new Map(oldItems.map(item => [item.subject, item]));
+  const newBySubject = new Map(newItems.map(item => [item.subject, item]));
+
+  const changes: string[] = [];
+
+  // Find changed and added items
+  for (const newItem of newItems) {
+    const oldItem = oldBySubject.get(newItem.subject);
+    
+    if (!oldItem) {
+      // New item added
+      const status = newItem.is_done ? "✅" : "❌";
+      changes.push(`  - ➕ ${newItem.subject}: ${status}`);
+    } else if (oldItem.is_done !== newItem.is_done) {
+      // Status changed
+      const oldStatus = oldItem.is_done ? "✅" : "❌";
+      const newStatus = newItem.is_done ? "✅" : "❌";
+      changes.push(`  - ${newItem.subject}: ${oldStatus} → ${newStatus}`);
+    }
+    // If subject and status are same, no change to report
+  }
+
+  // Find removed items
+  for (const oldItem of oldItems) {
+    if (!newBySubject.has(oldItem.subject)) {
+      const status = oldItem.is_done ? "✅" : "❌";
+      changes.push(`  - ➖ ${oldItem.subject}: ${status}`);
+    }
+  }
+
+  if (changes.length === 0) {
+    return null as unknown as string; // No meaningful changes
+  }
+
+  return changes.join("\n");
+}
+
+/**
  * Field name mappings for display (remove _id suffix)
  */
 const FIELD_DISPLAY_NAMES: Record<string, string> = {
@@ -120,6 +189,15 @@ function formatDetail(detail: { property: string; name: string; old_value?: stri
 
   // Handle attribute changes
   if (property === "attr") {
+    // Checklist changes get special formatting
+    if (name === "checklist") {
+      const checklistDiff = formatChecklistDiff(old_value || "", new_value || "");
+      if (checklistDiff) {
+        return `- checklist:\n${checklistDiff}`;
+      }
+      // Fall through to default formatting if parsing failed
+    }
+
     // Large text fields get diff formatting
     if (LARGE_TEXT_FIELDS.includes(name) && old_value && new_value) {
       const diff = generateDiff(old_value, new_value);

@@ -8,7 +8,7 @@ export function createServer(
 ): McpServer {
   const server = new McpServer({
     name: "redmine-mcp",
-    version: "0.4.4",
+    version: "0.4.5",
   });
 
   registerTools(server, redmineClient, toolGroups);
