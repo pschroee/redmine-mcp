@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import type { RedmineClient } from "../redmine/client.js";
+import { formatWikiPage, formatWikiPageList } from "../formatters/index.js";
 
 export function registerWikiTools(
   server: McpServer,
@@ -16,8 +17,13 @@ export function registerWikiTools(
     },
     async (params) => {
       const result = await client.listWikiPages(params.project_id);
+      if ("error" in result) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
       return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        content: [{ type: "text", text: formatWikiPageList(result) }],
       };
     }
   );
@@ -38,8 +44,13 @@ export function registerWikiTools(
         version: params.version,
         include: params.include,
       });
+      if ("error" in result) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
       return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        content: [{ type: "text", text: formatWikiPage(result) }],
       };
     }
   );

@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import type { RedmineClient } from "../redmine/client.js";
+import { formatUser, formatUserList } from "../formatters/index.js";
 
 export function registerAdminTools(
   server: McpServer,
@@ -22,8 +23,13 @@ export function registerAdminTools(
     },
     async (params) => {
       const result = await client.listUsers(params);
+      if ("error" in result) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
       return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        content: [{ type: "text", text: formatUserList(result) }],
       };
     }
   );
@@ -39,8 +45,13 @@ export function registerAdminTools(
     },
     async (params) => {
       const result = await client.getUser(params.user_id, params.include);
+      if ("error" in result) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
       return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        content: [{ type: "text", text: formatUser(result) }],
       };
     }
   );

@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import type { RedmineClient } from "../redmine/client.js";
-import { formatIssueResponse, type NameLookup } from "../formatters/index.js";
+import { formatIssueResponse, formatIssueList, formatProject, formatProjectList, type NameLookup } from "../formatters/index.js";
 
 export function registerCoreTools(
   server: McpServer,
@@ -34,8 +34,13 @@ export function registerCoreTools(
     },
     async (params) => {
       const result = await client.listIssues(params);
+      if ("error" in result) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
       return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        content: [{ type: "text", text: formatIssueList(result) }],
       };
     }
   );
@@ -233,8 +238,13 @@ export function registerCoreTools(
     },
     async (params) => {
       const result = await client.listProjects(params);
+      if ("error" in result) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
       return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        content: [{ type: "text", text: formatProjectList(result) }],
       };
     }
   );
@@ -250,8 +260,13 @@ export function registerCoreTools(
     },
     async (params) => {
       const result = await client.getProject(params.project_id, params.include);
+      if ("error" in result) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
       return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        content: [{ type: "text", text: formatProject(result) }],
       };
     }
   );

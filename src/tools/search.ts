@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import type { RedmineClient } from "../redmine/client.js";
+import { formatSearchResults } from "../formatters/index.js";
 
 export function registerSearchTools(
   server: McpServer,
@@ -30,8 +31,13 @@ export function registerSearchTools(
     },
     async (params) => {
       const result = await client.search(params);
+      if ("error" in result) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
       return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        content: [{ type: "text", text: formatSearchResults(result) }],
       };
     }
   );
