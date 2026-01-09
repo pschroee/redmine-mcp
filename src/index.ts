@@ -1,9 +1,13 @@
 #!/usr/bin/env node
 
+import { createRequire } from "module";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { RedmineClient } from "./redmine/client.js";
 import { createServer } from "./server.js";
 import { resolveGroups, ALL_GROUPS, PLUGIN_GROUPS, type ToolGroup } from "./tools/index.js";
+
+const require = createRequire(import.meta.url);
+const packageJson = require("../package.json") as { name: string; version: string };
 
 interface Config {
   url: string;
@@ -11,9 +15,13 @@ interface Config {
   toolGroups: ToolGroup[];
 }
 
+function printVersion(): void {
+  console.log(`${packageJson.name} v${packageJson.version}`);
+}
+
 function printHelp(): void {
   console.log(`
-Redmine MCP Server
+Redmine MCP Server v${packageJson.version}
 
 Usage: redmine-mcp [options]
 
@@ -22,6 +30,7 @@ Options:
   --api-key=<key>       API Key (or set REDMINE_API_KEY)
   --tools=<groups>      Comma-separated list of tool groups to enable
   --exclude=<groups>    Comma-separated list of tool groups to exclude
+  --version, -v         Show version number
   --help                Show this help message
 
 Tool Groups (all enabled by default):
@@ -48,6 +57,11 @@ function parseArgs(): Config {
 
     if (arg === "--help" || arg === "-h") {
       printHelp();
+      process.exit(0);
+    }
+
+    if (arg === "--version" || arg === "-v") {
+      printVersion();
       process.exit(0);
     }
 
@@ -102,7 +116,7 @@ function parseArgs(): Config {
 async function main(): Promise<void> {
   const config = parseArgs();
   const client = new RedmineClient(config.url, config.apiKey);
-  const server = createServer(client, config.toolGroups);
+  const server = createServer(client, config.toolGroups, packageJson.version);
 
   const transport = new StdioServerTransport();
   await server.connect(transport);

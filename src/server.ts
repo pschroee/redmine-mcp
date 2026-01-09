@@ -4,11 +4,12 @@ import { registerTools, type ToolGroup } from "./tools/index.js";
 
 export function createServer(
   redmineClient: RedmineClient,
-  toolGroups: ToolGroup[]
+  toolGroups: ToolGroup[],
+  version: string
 ): McpServer {
   const server = new McpServer({
     name: "redmine-mcp",
-    version: "0.5.4",
+    version,
   });
 
   registerTools(server, redmineClient, toolGroups);
