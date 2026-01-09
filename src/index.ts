@@ -3,7 +3,7 @@
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { RedmineClient } from "./redmine/client.js";
 import { createServer } from "./server.js";
-import { resolveGroups, ALL_GROUPS, type ToolGroup } from "./tools/index.js";
+import { resolveGroups, ALL_GROUPS, PLUGIN_GROUPS, type ToolGroup } from "./tools/index.js";
 
 interface Config {
   url: string;
@@ -24,13 +24,15 @@ Options:
   --exclude=<groups>    Comma-separated list of tool groups to exclude
   --help                Show this help message
 
-Tool Groups:
+Tool Groups (all enabled by default):
   ${ALL_GROUPS.join(", ")}
+
+Note: Plugin groups (${PLUGIN_GROUPS.join(", ")}) require RedmineUP plugins installed.
 
 Examples:
   redmine-mcp --url=https://redmine.example.com --api-key=abc123
   redmine-mcp --tools=core,metadata
-  redmine-mcp --exclude=wiki,files
+  redmine-mcp --exclude=wiki,files,plugin_checklists,plugin_agile
 `);
 }
 

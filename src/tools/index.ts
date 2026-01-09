@@ -2,6 +2,8 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { RedmineClient } from "../redmine/client.js";
 import { registerAccountTools } from "./account.js";
 import { registerAdminTools } from "./admin.js";
+import { registerAgileTools } from "./agile.js";
+import { registerChecklistsTools } from "./checklists.js";
 import { registerCoreTools } from "./core.js";
 import { registerEnumerationsTools } from "./enumerations.js";
 import { registerFilesTools } from "./files.js";
@@ -16,7 +18,8 @@ import { registerWikiTools } from "./wiki.js";
 // Tool registration function type
 export type ToolRegistrationFn = (server: McpServer, client: RedmineClient) => void;
 
-export const toolGroups: Record<string, ToolRegistrationFn> = {
+// Core tool groups
+export const coreToolGroups: Record<string, ToolRegistrationFn> = {
   core: registerCoreTools,
   metadata: registerMetadataTools,
   wiki: registerWikiTools,
@@ -31,9 +34,25 @@ export const toolGroups: Record<string, ToolRegistrationFn> = {
   admin: registerAdminTools,
 };
 
+// Plugin tool groups (require RedmineUP plugins to be installed)
+export const pluginToolGroups: Record<string, ToolRegistrationFn> = {
+  plugin_checklists: registerChecklistsTools,
+  plugin_agile: registerAgileTools,
+};
+
+// All tool groups combined
+export const toolGroups: Record<string, ToolRegistrationFn> = {
+  ...coreToolGroups,
+  ...pluginToolGroups,
+};
+
 export type ToolGroup = keyof typeof toolGroups;
 
+// All groups including plugins are enabled by default
 export const ALL_GROUPS: ToolGroup[] = Object.keys(toolGroups) as ToolGroup[];
+
+// Plugin groups (for documentation purposes)
+export const PLUGIN_GROUPS: ToolGroup[] = Object.keys(pluginToolGroups) as ToolGroup[];
 
 export function isValidToolGroup(group: string): group is ToolGroup {
   return group in toolGroups;

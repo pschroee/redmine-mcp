@@ -44,7 +44,18 @@ npx @pschroee/redmine-mcp@latest --url=https://your-redmine.com --api-key=your-a
 | `roles` | 2 | Roles listing and details |
 | `admin` | 11 | Users & Groups management (admin only) |
 
-**Total: 70 Tools**
+**Total: 70 Core Tools**
+
+### Plugin Groups (enabled by default, require RedmineUP plugins)
+
+| Group | Tools | Description |
+|-------|-------|-------------|
+| `plugin_checklists` | 5 | Checklist items (requires [redmine_checklists](https://www.redmineup.com/pages/plugins/checklists) plugin) |
+| `plugin_agile` | 7 | Agile sprints & story points (requires [redmine_agile](https://www.redmineup.com/pages/plugins/agile) plugin) |
+
+**Total: 12 Plugin Tools**
+
+> **Note:** Plugin tools are enabled by default but require the corresponding RedmineUP plugins to be installed on your Redmine server. If a plugin is not installed, the tools will return errors when used. Use `--exclude=plugin_checklists,plugin_agile` to disable them.
 
 ## Usage Examples
 
@@ -64,6 +75,12 @@ npx @pschroee/redmine-mcp@latest --tools=core,metadata
 
 ```bash
 npx @pschroee/redmine-mcp@latest --exclude=wiki,files
+```
+
+### Exclude plugin tools (if plugins not installed)
+
+```bash
+npx @pschroee/redmine-mcp@latest --exclude=plugin_checklists,plugin_agile
 ```
 
 ## Claude Configuration
@@ -100,6 +117,24 @@ claude mcp add redmine -s user -- npx -y @pschroee/redmine-mcp \
 claude mcp add redmine -s user -- cmd /c npx -y @pschroee/redmine-mcp \
   --url=https://your-redmine.com --api-key=your-api-key \
   --tools=core,metadata,search
+```
+
+### Without Plugin Tools
+
+**macOS / Linux:**
+
+```bash
+claude mcp add redmine -s user -- npx -y @pschroee/redmine-mcp@latest \
+  --url=https://your-redmine.com --api-key=your-api-key \
+  --exclude=plugin_checklists,plugin_agile
+```
+
+**Windows:**
+
+```bash
+claude mcp add redmine -s user -- cmd /c npx -y @pschroee/redmine-mcp@latest \
+  --url=https://your-redmine.com --api-key=your-api-key \
+  --exclude=plugin_checklists,plugin_agile
 ```
 
 ### Manual Configuration (Claude Desktop)
@@ -292,6 +327,28 @@ Add to your Claude Desktop config (`%APPDATA%\Claude\claude_desktop_config.json`
 - `add_user_to_group` - Add user to group
 - `remove_user_from_group` - Remove user from group
 
+### Plugin: Checklists (plugin_checklists)
+
+> Requires [redmine_checklists](https://www.redmineup.com/pages/plugins/checklists) plugin
+
+- `list_checklists` - List checklist items for an issue
+- `get_checklist` - Get checklist item details
+- `create_checklist` - Create checklist item
+- `update_checklist` - Update checklist item (text, done status)
+- `delete_checklist` - Delete checklist item
+
+### Plugin: Agile (plugin_agile)
+
+> Requires [redmine_agile](https://www.redmineup.com/pages/plugins/agile) plugin
+
+- `list_agile_sprints` - List sprints for a project
+- `get_agile_sprint` - Get sprint details
+- `create_agile_sprint` - Create sprint
+- `update_agile_sprint` - Update sprint
+- `delete_agile_sprint` - Delete sprint
+- `get_issue_agile_data` - Get agile data for issue (position, story points, sprint)
+- `update_issue_agile_data` - Update agile data for issue
+
 ## Development
 
 ```bash
@@ -329,12 +386,12 @@ npm test
 
 ### Test Coverage
 
-The test suite includes 195 tests across 12 test files:
+The test suite includes 198 tests across 12 test files:
 
 | Test File | Tests | Description |
 |-----------|-------|-------------|
 | `account.test.ts` | 1 | Current user account |
-| `core.test.ts` | 48 | Projects and Issues CRUD |
+| `core.test.ts` | 51 | Projects and Issues CRUD |
 | `metadata.test.ts` | 14 | Trackers, Statuses, Categories |
 | `relations.test.ts` | 24 | Versions and Issue Relations |
 | `wiki.test.ts` | 14 | Wiki Pages CRUD |

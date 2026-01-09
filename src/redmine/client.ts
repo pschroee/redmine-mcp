@@ -35,6 +35,11 @@ import type {
   RedmineMembershipsResponse,
   RedmineRole,
   RedmineRolesResponse,
+  RedmineChecklist,
+  RedmineChecklistsResponse,
+  RedmineAgileSprint,
+  RedmineAgileSprintsResponse,
+  RedmineAgileData,
 } from "./types.js";
 
 export class RedmineClient {
@@ -851,5 +856,119 @@ export class RedmineClient {
 
   async getRole(id: number): Promise<RedmineResult<{ role: RedmineRole }>> {
     return this.request<{ role: RedmineRole }>("GET", `/roles/${id}.json`);
+  }
+
+  // ==================== CHECKLISTS (Plugin) ====================
+
+  async listChecklists(issueId: number): Promise<RedmineResult<RedmineChecklistsResponse>> {
+    return this.request<RedmineChecklistsResponse>("GET", `/issues/${issueId}/checklists.json`);
+  }
+
+  async getChecklist(id: number): Promise<RedmineResult<{ checklist: RedmineChecklist }>> {
+    return this.request<{ checklist: RedmineChecklist }>("GET", `/checklists/${id}.json`);
+  }
+
+  async createChecklist(data: {
+    issue_id: number;
+    subject: string;
+    is_done?: boolean;
+    position?: number;
+  }): Promise<RedmineResult<{ checklist: RedmineChecklist }>> {
+    return this.request<{ checklist: RedmineChecklist }>("POST", "/checklists.json", {
+      checklist: data,
+    });
+  }
+
+  async updateChecklist(
+    id: number,
+    data: {
+      subject?: string;
+      is_done?: boolean;
+      position?: number;
+    }
+  ): Promise<RedmineResult<void>> {
+    return this.request<void>("PUT", `/checklists/${id}.json`, {
+      checklist: data,
+    });
+  }
+
+  async deleteChecklist(id: number): Promise<RedmineResult<void>> {
+    return this.request<void>("DELETE", `/checklists/${id}.json`);
+  }
+
+  // ==================== AGILE (Plugin) ====================
+
+  async listAgileSprints(projectId: string | number): Promise<RedmineResult<RedmineAgileSprintsResponse>> {
+    return this.request<RedmineAgileSprintsResponse>("GET", `/projects/${projectId}/agile_sprints.json`);
+  }
+
+  async getAgileSprint(
+    projectId: string | number,
+    sprintId: number
+  ): Promise<RedmineResult<{ agile_sprint: RedmineAgileSprint }>> {
+    return this.request<{ agile_sprint: RedmineAgileSprint }>(
+      "GET",
+      `/projects/${projectId}/agile_sprints/${sprintId}.json`
+    );
+  }
+
+  async createAgileSprint(
+    projectId: string | number,
+    data: {
+      name: string;
+      status?: string;
+      start_date?: string;
+      end_date?: string;
+      description?: string;
+      sharing?: string;
+    }
+  ): Promise<RedmineResult<{ agile_sprint: RedmineAgileSprint }>> {
+    return this.request<{ agile_sprint: RedmineAgileSprint }>(
+      "POST",
+      `/projects/${projectId}/agile_sprints.json`,
+      { agile_sprint: data }
+    );
+  }
+
+  async updateAgileSprint(
+    projectId: string | number,
+    sprintId: number,
+    data: {
+      name?: string;
+      status?: string;
+      start_date?: string;
+      end_date?: string;
+      description?: string;
+      sharing?: string;
+    }
+  ): Promise<RedmineResult<void>> {
+    return this.request<void>(
+      "PUT",
+      `/projects/${projectId}/agile_sprints/${sprintId}.json`,
+      { agile_sprint: data }
+    );
+  }
+
+  async deleteAgileSprint(projectId: string | number, sprintId: number): Promise<RedmineResult<void>> {
+    return this.request<void>("DELETE", `/projects/${projectId}/agile_sprints/${sprintId}.json`);
+  }
+
+  async getIssueAgileData(issueId: number): Promise<RedmineResult<{ agile_data: RedmineAgileData }>> {
+    return this.request<{ agile_data: RedmineAgileData }>("GET", `/issues/${issueId}/agile_data.json`);
+  }
+
+  async updateIssueAgileData(
+    issueId: number,
+    data: {
+      position?: number;
+      story_points?: number;
+      agile_sprint_id?: number | null;
+    }
+  ): Promise<RedmineResult<void>> {
+    return this.request<void>("PUT", `/issues/${issueId}.json`, {
+      issue: {
+        agile_data_attributes: data,
+      },
+    });
   }
 }

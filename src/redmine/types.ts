@@ -457,3 +457,50 @@ export interface RedmineRole {
 export interface RedmineRolesResponse {
   roles: RedmineRole[];
 }
+
+// === CHECKLISTS (Plugin: redmine_checklists) ===
+
+export interface RedmineChecklist {
+  id: number;
+  issue_id: number;
+  subject: string;
+  is_done: boolean;
+  position: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface RedmineChecklistsResponse {
+  checklists: RedmineChecklist[];
+}
+
+// === AGILE (Plugin: redmine_agile) ===
+
+export interface RedmineAgileSprint {
+  id: number;
+  name: string;
+  status: string;
+  start_date?: string;
+  end_date?: string;
+  description?: string;
+  sharing?: string;
+  is_active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface RedmineAgileSprintsResponse {
+  agile_sprints: RedmineAgileSprint[];
+}
+
+export interface RedmineAgileData {
+  id: number;
+  issue_id: number;
+  position: number;
+  story_points?: number;
+  agile_sprint_id?: number;
+}
+
+export interface RedmineAgileDataResponse {
+  agile_data: RedmineAgileData;
+}
