@@ -338,3 +338,122 @@ export interface RedmineMyAccount {
 export interface RedmineMyAccountResponse {
   user: RedmineMyAccount;
 }
+
+// === TIME ENTRIES ===
+
+export interface RedmineTimeEntry {
+  id: number;
+  project: { id: number; name: string };
+  issue?: { id: number };
+  user: { id: number; name: string };
+  activity: { id: number; name: string };
+  hours: number;
+  comments?: string;
+  spent_on: string;
+  created_on: string;
+  updated_on: string;
+  custom_fields?: RedmineCustomFieldValue[];
+}
+
+export interface RedmineTimeEntriesResponse {
+  time_entries: RedmineTimeEntry[];
+  total_count: number;
+  offset: number;
+  limit: number;
+}
+
+// === ENUMERATIONS ===
+
+export interface RedmineEnumeration {
+  id: number;
+  name: string;
+  is_default: boolean;
+}
+
+export interface RedmineIssuePrioritiesResponse {
+  issue_priorities: RedmineEnumeration[];
+}
+
+export interface RedmineTimeEntryActivitiesResponse {
+  time_entry_activities: RedmineEnumeration[];
+}
+
+export interface RedmineDocumentCategoriesResponse {
+  document_categories: RedmineEnumeration[];
+}
+
+// === USERS ===
+
+export interface RedmineUser {
+  id: number;
+  login: string;
+  admin?: boolean;
+  firstname: string;
+  lastname: string;
+  mail?: string;
+  created_on: string;
+  updated_on?: string;
+  last_login_on?: string;
+  passwd_changed_on?: string;
+  api_key?: string;
+  status?: number;
+  custom_fields?: RedmineCustomFieldValue[];
+  memberships?: RedmineMembership[];
+  groups?: { id: number; name: string }[];
+}
+
+export interface RedmineUsersResponse {
+  users: RedmineUser[];
+  total_count: number;
+  offset: number;
+  limit: number;
+}
+
+// === GROUPS ===
+
+export interface RedmineGroup {
+  id: number;
+  name: string;
+  users?: { id: number; name: string }[];
+  memberships?: RedmineMembership[];
+}
+
+export interface RedmineGroupsResponse {
+  groups: RedmineGroup[];
+  total_count: number;
+  offset: number;
+  limit: number;
+}
+
+// === MEMBERSHIPS ===
+
+export interface RedmineMembership {
+  id: number;
+  project: { id: number; name: string };
+  user?: { id: number; name: string };
+  group?: { id: number; name: string };
+  roles: { id: number; name: string; inherited?: boolean }[];
+}
+
+export interface RedmineMembershipsResponse {
+  memberships: RedmineMembership[];
+  total_count: number;
+  offset: number;
+  limit: number;
+}
+
+// === ROLES ===
+
+export interface RedmineRole {
+  id: number;
+  name: string;
+  assignable?: boolean;
+  issues_visibility?: string;
+  time_entries_visibility?: string;
+  users_visibility?: string;
+  permissions?: string[];
+}
+
+export interface RedmineRolesResponse {
+  roles: RedmineRole[];
+}
