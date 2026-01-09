@@ -90,7 +90,7 @@ export class RedmineClient {
     status_id?: string | number;
     assigned_to_id?: number | string;
     parent_id?: number;
-    author_id?: number;
+    author_id?: number | string;
     category_id?: number;
     fixed_version_id?: number;
     subject?: string;

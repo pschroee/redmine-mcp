@@ -145,7 +145,7 @@ export function registerRelationsTools(
         sharing: z
           .enum(["none", "descendants", "hierarchy", "tree", "system"])
           .optional()
-          .describe("Sharing scope"),
+          .describe("Sharing scope: 'none' (this project only), 'descendants' (with subprojects), 'hierarchy' (with parent/children), 'tree' (whole project tree), 'system' (all projects)"),
         due_date: z.string().optional().describe("Due date (YYYY-MM-DD)"),
         description: z.string().optional().describe("Version description"),
         wiki_page_title: z.string().optional().describe("Associated wiki page"),
@@ -174,7 +174,7 @@ export function registerRelationsTools(
         sharing: z
           .enum(["none", "descendants", "hierarchy", "tree", "system"])
           .optional()
-          .describe("New sharing scope"),
+          .describe("Sharing scope: 'none' (this project only), 'descendants' (with subprojects), 'hierarchy' (with parent/children), 'tree' (whole project tree), 'system' (all projects)"),
         due_date: z.string().optional().describe("New due date"),
         description: z.string().optional().describe("New description"),
         wiki_page_title: z.string().optional().describe("New associated wiki page"),
