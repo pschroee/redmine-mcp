@@ -5,13 +5,13 @@ A Model Context Protocol (MCP) server for interacting with Redmine project manag
 ## Installation
 
 ```bash
-npm install -g @pschroee/mcp-server
+npm install -g @pschroee/redmine-mcp
 ```
 
 Or use directly with npx:
 
 ```bash
-npx @pschroee/mcp-server --url=https://your-redmine.com --api-key=your-api-key
+npx @pschroee/redmine-mcp --url=https://your-redmine.com --api-key=your-api-key
 ```
 
 ## Configuration
@@ -51,19 +51,19 @@ npx @pschroee/mcp-server --url=https://your-redmine.com --api-key=your-api-key
 ### Load all tools (default)
 
 ```bash
-npx @pschroee/mcp-server --url=https://redmine.example.com --api-key=abc123
+npx @pschroee/redmine-mcp --url=https://redmine.example.com --api-key=abc123
 ```
 
 ### Load only specific groups
 
 ```bash
-npx @pschroee/mcp-server --tools=core,metadata
+npx @pschroee/redmine-mcp --tools=core,metadata
 ```
 
 ### Exclude specific groups
 
 ```bash
-npx @pschroee/mcp-server --exclude=wiki,files
+npx @pschroee/redmine-mcp --exclude=wiki,files
 ```
 
 ## Claude Configuration
@@ -73,14 +73,14 @@ npx @pschroee/mcp-server --exclude=wiki,files
 **macOS / Linux:**
 
 ```bash
-claude mcp add redmine -s user -- npx -y @pschroee/mcp-server \
+claude mcp add redmine -s user -- npx -y @pschroee/redmine-mcp \
   --url=https://your-redmine.com --api-key=your-api-key
 ```
 
 **Windows:**
 
 ```bash
-claude mcp add redmine -s user -- cmd /c npx -y @pschroee/mcp-server \
+claude mcp add redmine -s user -- cmd /c npx -y @pschroee/redmine-mcp \
   --url=https://your-redmine.com --api-key=your-api-key
 ```
 
@@ -89,7 +89,7 @@ claude mcp add redmine -s user -- cmd /c npx -y @pschroee/mcp-server \
 **macOS / Linux:**
 
 ```bash
-claude mcp add redmine -s user -- npx -y @pschroee/mcp-server \
+claude mcp add redmine -s user -- npx -y @pschroee/redmine-mcp \
   --url=https://your-redmine.com --api-key=your-api-key \
   --tools=core,metadata,search
 ```
@@ -97,7 +97,7 @@ claude mcp add redmine -s user -- npx -y @pschroee/mcp-server \
 **Windows:**
 
 ```bash
-claude mcp add redmine -s user -- cmd /c npx -y @pschroee/mcp-server \
+claude mcp add redmine -s user -- cmd /c npx -y @pschroee/redmine-mcp \
   --url=https://your-redmine.com --api-key=your-api-key \
   --tools=core,metadata,search
 ```
@@ -114,7 +114,7 @@ Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_
     "redmine": {
       "command": "npx",
       "args": [
-        "@pschroee/mcp-server",
+        "@pschroee/redmine-mcp",
         "--url=https://your-redmine.com",
         "--api-key=your-api-key"
       ]
@@ -135,7 +135,7 @@ Add to your Claude Desktop config (`%APPDATA%\Claude\claude_desktop_config.json`
       "args": [
         "/c",
         "npx",
-        "@pschroee/mcp-server",
+        "@pschroee/redmine-mcp",
         "--url=https://your-redmine.com",
         "--api-key=your-api-key"
       ]
@@ -154,7 +154,7 @@ Add to your Claude Desktop config (`%APPDATA%\Claude\claude_desktop_config.json`
     "redmine": {
       "command": "npx",
       "args": [
-        "@pschroee/mcp-server",
+        "@pschroee/redmine-mcp",
         "--url=https://your-redmine.com",
         "--api-key=your-api-key",
         "--tools=core,metadata,search"
@@ -174,7 +174,7 @@ Add to your Claude Desktop config (`%APPDATA%\Claude\claude_desktop_config.json`
       "args": [
         "/c",
         "npx",
-        "@pschroee/mcp-server",
+        "@pschroee/redmine-mcp",
         "--url=https://your-redmine.com",
         "--api-key=your-api-key",
         "--tools=core,metadata,search"

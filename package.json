@@ -1,6 +1,6 @@
 {
-  "name": "@pschroee/mcp-server",
-  "version": "0.3.0",
+  "name": "@pschroee/redmine-mcp",
+  "version": "0.3.1",
   "description": "MCP server for Redmine - full API access with configurable tool groups",
   "type": "module",
   "bin": {
