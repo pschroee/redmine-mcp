@@ -131,4 +131,114 @@ describe("formatIssueList", () => {
     expect(result).toContain("# Issues (2 of 100)");
     expect(result).toContain("_Showing 1-2 of 100_");
   });
+
+  it("should show custom fields as separate columns", () => {
+    const response: RedmineIssuesResponse = {
+      issues: [
+        createMockIssue({
+          id: 1,
+          subject: "Issue with custom fields",
+          updated_on: "2024-01-20T10:00:00Z",
+          custom_fields: [
+            { id: 1, name: "Sprint", value: "Sprint 5" },
+            { id: 2, name: "Story Points", value: "8" },
+          ],
+        }),
+        createMockIssue({
+          id: 2,
+          subject: "Another issue",
+          updated_on: "2024-01-21T10:00:00Z",
+          custom_fields: [
+            { id: 1, name: "Sprint", value: "Sprint 6" },
+            { id: 2, name: "Story Points", value: "3" },
+          ],
+        }),
+      ],
+      total_count: 2,
+      offset: 0,
+      limit: 25,
+    };
+
+    const result = formatIssueList(response);
+
+    expect(result).toContain("| ID | Subject | Status | Priority | Assigned | Updated | Sprint | Story Points |");
+    expect(result).toContain("| #1 | Issue with custom fields | New | Normal | _(unassigned)_ | 2024-01-20 | Sprint 5 | 8 |");
+    expect(result).toContain("| #2 | Another issue | New | Normal | _(unassigned)_ | 2024-01-21 | Sprint 6 | 3 |");
+  });
+
+  it("should handle issues with different custom fields", () => {
+    const response: RedmineIssuesResponse = {
+      issues: [
+        createMockIssue({
+          id: 1,
+          subject: "Issue A",
+          updated_on: "2024-01-20T10:00:00Z",
+          custom_fields: [
+            { id: 1, name: "Sprint", value: "Sprint 5" },
+          ],
+        }),
+        createMockIssue({
+          id: 2,
+          subject: "Issue B",
+          updated_on: "2024-01-21T10:00:00Z",
+          custom_fields: [
+            { id: 2, name: "Story Points", value: "5" },
+          ],
+        }),
+      ],
+      total_count: 2,
+      offset: 0,
+      limit: 25,
+    };
+
+    const result = formatIssueList(response);
+
+    expect(result).toContain("| Sprint | Story Points |");
+    expect(result).toContain("| #1 | Issue A | New | Normal | _(unassigned)_ | 2024-01-20 | Sprint 5 |  |");
+    expect(result).toContain("| #2 | Issue B | New | Normal | _(unassigned)_ | 2024-01-21 |  | 5 |");
+  });
+
+  it("should handle custom fields with array values", () => {
+    const response: RedmineIssuesResponse = {
+      issues: [
+        createMockIssue({
+          id: 1,
+          subject: "Issue with multi-value",
+          updated_on: "2024-01-20T10:00:00Z",
+          custom_fields: [
+            { id: 1, name: "Tags", value: ["Frontend", "Backend", "API"] },
+          ],
+        }),
+      ],
+      total_count: 1,
+      offset: 0,
+      limit: 25,
+    };
+
+    const result = formatIssueList(response);
+
+    expect(result).toContain("| Tags |");
+    expect(result).toContain("Frontend, Backend, API");
+  });
+
+  it("should handle issues without custom fields", () => {
+    const response: RedmineIssuesResponse = {
+      issues: [
+        createMockIssue({
+          id: 1,
+          subject: "Issue without CF",
+          updated_on: "2024-01-20T10:00:00Z",
+        }),
+      ],
+      total_count: 1,
+      offset: 0,
+      limit: 25,
+    };
+
+    const result = formatIssueList(response);
+
+    // Should not have extra columns
+    expect(result).toContain("| ID | Subject | Status | Priority | Assigned | Updated |");
+    expect(result).not.toContain("| ID | Subject | Status | Priority | Assigned | Updated | ");
+  });
 });

@@ -170,9 +170,24 @@ export function formatIssueList(response: RedmineIssuesResponse): string {
     return lines.join("\n");
   }
 
+  // Collect all unique custom field names (preserving order by ID)
+  const customFieldMap = new Map<number, string>(); // id -> name
+  for (const issue of issues) {
+    if (issue.custom_fields) {
+      for (const cf of issue.custom_fields) {
+        if (!customFieldMap.has(cf.id)) {
+          customFieldMap.set(cf.id, cf.name);
+        }
+      }
+    }
+  }
+  const customFieldIds = Array.from(customFieldMap.keys()).sort((a, b) => a - b);
+  const customFieldNames = customFieldIds.map(id => customFieldMap.get(id)!);
+
   // Table header
-  lines.push("| ID | Subject | Status | Priority | Assigned | Updated |");
-  lines.push("|---|---|---|---|---|---|");
+  const headerCols = ["ID", "Subject", "Status", "Priority", "Assigned", "Updated", ...customFieldNames];
+  lines.push("| " + headerCols.join(" | ") + " |");
+  lines.push("|" + headerCols.map(() => "---").join("|") + "|");
 
   // Table rows
   for (const issue of issues) {
@@ -183,7 +198,20 @@ export function formatIssueList(response: RedmineIssuesResponse): string {
     const assigned = issue.assigned_to?.name ?? "_(unassigned)_";
     const updated = formatDateShort(issue.updated_on);
 
-    lines.push(`| ${id} | ${subject} | ${status} | ${priority} | ${assigned} | ${updated} |`);
+    // Build custom field values in order
+    const cfValues: string[] = [];
+    for (const cfId of customFieldIds) {
+      const cf = issue.custom_fields?.find(f => f.id === cfId);
+      if (cf) {
+        const value = Array.isArray(cf.value) ? cf.value.join(", ") : cf.value;
+        cfValues.push(value || "");
+      } else {
+        cfValues.push("");
+      }
+    }
+
+    const cols = [id, subject, status, priority, assigned, updated, ...cfValues];
+    lines.push("| " + cols.join(" | ") + " |");
   }
 
   return lines.join("\n");
