@@ -19,6 +19,7 @@ export {
   formatCustomFieldList,
   formatQueryList,
   formatDocumentCategoryList,
+  type ProjectLookup,
 } from "./metadata.js";
 export { formatRelation, formatRelationList } from "./relation.js";
 export { formatAttachment, formatFileList } from "./file.js";

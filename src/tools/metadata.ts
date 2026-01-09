@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import type { RedmineClient } from "../redmine/client.js";
-import { formatTrackerList, formatStatusList, formatCategoryList, formatCategory, formatCustomFieldList, formatQueryList } from "../formatters/index.js";
+import { formatTrackerList, formatStatusList, formatCategoryList, formatCategory, formatCustomFieldList, formatQueryList, type ProjectLookup } from "../formatters/index.js";
 
 export function registerMetadataTools(
   server: McpServer,
@@ -183,8 +183,23 @@ export function registerMetadataTools(
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
       }
+
+      // Build project lookup for resolving project names
+      const projectLookup: ProjectLookup = {};
+      const projectIds = new Set(result.queries.map(q => q.project_id).filter((id): id is number => id != null));
+      if (projectIds.size > 0) {
+        const projectsResult = await client.listProjects({ limit: 100 });
+        if (!("error" in projectsResult)) {
+          for (const project of projectsResult.projects) {
+            if (projectIds.has(project.id)) {
+              projectLookup[project.id] = project.name;
+            }
+          }
+        }
+      }
+
       return {
-        content: [{ type: "text", text: formatQueryList(result) }],
+        content: [{ type: "text", text: formatQueryList(result, projectLookup) }],
       };
     }
   );

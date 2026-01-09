@@ -322,9 +322,14 @@ export function formatCustomFieldList(response: RedmineCustomFieldsResponse): st
 }
 
 /**
+ * Project lookup map: ID -> name
+ */
+export type ProjectLookup = Record<number, string>;
+
+/**
  * Format a list of saved queries as a Markdown table
  */
-export function formatQueryList(response: RedmineQueriesResponse): string {
+export function formatQueryList(response: RedmineQueriesResponse, projectLookup: ProjectLookup = {}): string {
   const queries = response.queries;
 
   if (queries.length === 0) {
@@ -339,7 +344,11 @@ export function formatQueryList(response: RedmineQueriesResponse): string {
 
   for (const query of queries) {
     const visibility = query.is_public ? "Public" : "Private";
-    const project = query.project_id ? `#${query.project_id}` : "Global";
+    let project = "Global";
+    if (query.project_id) {
+      const projectName = projectLookup[query.project_id];
+      project = projectName ? `${projectName} (${query.project_id})` : `#${query.project_id}`;
+    }
     lines.push(`| ${query.id} | ${query.name} | ${project} | ${visibility} |`);
   }
 
