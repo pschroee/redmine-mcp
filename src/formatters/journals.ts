@@ -230,16 +230,15 @@ function formatDetail(detail: { property: string; name: string; old_value?: stri
 /**
  * Format a single journal entry as Markdown
  */
-function formatJournalEntry(journal: RedmineJournal, index: number, lookup: NameLookup, options: JournalFormatOptions = {}): string {
+function formatJournalEntry(journal: RedmineJournal, noteNumber: number, lookup: NameLookup, options: JournalFormatOptions = {}): string {
   const lines: string[] = [];
 
   // Header with note number, date and user
-  const noteNum = index + 1;
   const date = formatDate(journal.created_on);
   const user = journal.user.name;
   const privateTag = journal.private_notes ? " 🔒" : "";
   
-  lines.push(`### #${noteNum} - ${date} - ${user}${privateTag}`);
+  lines.push(`### #${noteNumber} - ${date} - ${user}${privateTag}`);
   lines.push("");
 
   // Notes (if any)
@@ -263,7 +262,7 @@ function formatJournalEntry(journal: RedmineJournal, index: number, lookup: Name
 /**
  * Format an array of journal entries as Markdown
  * Entries are displayed in reverse chronological order (newest first)
- * Note numbers are preserved (1 = oldest, highest = newest)
+ * Note numbers match Redmine's numbering (1 = oldest, highest = newest)
  */
 export function formatJournals(journals: RedmineJournal[], lookup: NameLookup = {}, options: JournalFormatOptions = {}): string {
   if (!journals || journals.length === 0) {
@@ -272,8 +271,8 @@ export function formatJournals(journals: RedmineJournal[], lookup: NameLookup = 
 
   const header = `## History (${journals.length} entries)\n\n`;
   
-  // Format entries with their original indices (for note numbers), then reverse for display
-  const formattedEntries = journals.map((j, i) => formatJournalEntry(j, i, lookup, options));
+  // Format entries with correct note numbers (1 = oldest), then reverse for display (newest first)
+  const formattedEntries = journals.map((j, i) => formatJournalEntry(j, i + 1, lookup, options));
   const entries = formattedEntries.reverse().join("\n---\n\n");
 
   return header + entries;
