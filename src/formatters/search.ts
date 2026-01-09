@@ -1,4 +1,5 @@
 import type { RedmineSearchResponse, RedmineSearchResult } from "../redmine/types.js";
+import { formatDateShort, truncate } from "./utils.js";
 
 /**
  * Get icon for search result type
@@ -14,23 +15,6 @@ function getTypeIcon(type: string): string {
     default:
       return "\u{1F4CB}"; // clipboard
   }
-}
-
-/**
- * Format a date string to YYYY-MM-DD format
- */
-function formatDateShort(isoDate: string): string {
-  return new Date(isoDate).toISOString().slice(0, 10);
-}
-
-/**
- * Truncate text to a maximum length with ellipsis
- */
-function truncate(text: string, maxLength: number): string {
-  if (text.length <= maxLength) {
-    return text;
-  }
-  return text.slice(0, maxLength) + "...";
 }
 
 /**

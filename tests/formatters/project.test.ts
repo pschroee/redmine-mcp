@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { formatProject, formatProjectList } from "../../src/formatters/project.js";
 import type { RedmineProject, RedmineProjectsResponse } from "../../src/redmine/types.js";
+import { expectedDate } from "../helpers.js";
 
 const baseProject: RedmineProject = {
   id: 1,
@@ -20,8 +21,8 @@ describe("formatProject", () => {
     expect(result).toContain("**Identifier:** test-project");
     expect(result).toContain("**Status:** Active");
     expect(result).toContain("**Public:** Yes");
-    expect(result).toContain("| Created | 2024-01-15 10:30 |");
-    expect(result).toContain("| Updated | 2024-01-20 14:45 |");
+    expect(result).toContain(`| Created | ${expectedDate("2024-01-15T10:30:00Z")} |`);
+    expect(result).toContain(`| Updated | ${expectedDate("2024-01-20T14:45:00Z")} |`);
   });
 
   test("formats private project", () => {

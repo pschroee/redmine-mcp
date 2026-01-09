@@ -1,5 +1,6 @@
 import { diffLines } from "diff";
 import type { RedmineJournal } from "../redmine/types.js";
+import { formatDate } from "./utils.js";
 
 /**
  * Lookup map for resolving IDs to names
@@ -101,14 +102,6 @@ const FIELD_DISPLAY_NAMES: Record<string, string> = {
   parent_id: "parent",
   project_id: "project",
 };
-
-/**
- * Format a date string to a readable format
- */
-function formatDate(isoDate: string): string {
-  const date = new Date(isoDate);
-  return date.toISOString().slice(0, 16).replace("T", " ");
-}
 
 /**
  * Generate a unified diff for large text changes

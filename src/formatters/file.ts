@@ -1,13 +1,10 @@
 import type { RedmineAttachment, RedmineFilesResponse } from "../redmine/types.js";
+import { formatDate, formatDateShort } from "./utils.js";
 
 function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
-}
-
-function formatDate(isoDate: string): string {
-  return isoDate.slice(0, 10);
 }
 
 export function formatAttachment(response: { attachment: RedmineAttachment }): string {
@@ -60,7 +57,7 @@ export function formatFileList(response: RedmineFilesResponse): string {
 
   for (const file of files) {
     const size = formatFileSize(file.filesize);
-    const date = formatDate(file.created_on);
+    const date = formatDateShort(file.created_on);
     if (hasVersion) {
       const version = file.version?.name || "";
       lines.push(`| ${file.filename} | ${size} | ${version} | ${file.downloads} | ${file.author.name} | ${date} |`);

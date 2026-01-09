@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { formatAttachment, formatFileList } from "../../src/formatters/file.js";
 import type { RedmineAttachment, RedmineFile, RedmineFilesResponse } from "../../src/redmine/types.js";
+import { expectedDate, expectedDateShort } from "../helpers.js";
 
 const baseAttachment: RedmineAttachment = {
   id: 123,
@@ -33,7 +34,7 @@ describe("formatAttachment", () => {
     expect(result).toContain("| Size | 1 KB |");
     expect(result).toContain("| Type | application/pdf |");
     expect(result).toContain("| Author | John Doe |");
-    expect(result).toContain("| Created | 2024-03-15 |");
+    expect(result).toContain(`| Created | ${expectedDate("2024-03-15T10:30:00Z")} |`);
     expect(result).toContain("**Download:** https://redmine.example.com/attachments/download/123/document.pdf");
   });
 

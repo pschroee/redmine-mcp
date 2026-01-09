@@ -1,14 +1,11 @@
 import type { RedmineMyAccountResponse } from "../redmine/types.js";
+import { formatDate } from "./utils.js";
 
 const USER_STATUS: Record<number, string> = {
   1: "Active",
   2: "Registered",
   3: "Locked",
 };
-
-function formatDate(isoDate: string): string {
-  return isoDate.slice(0, 16).replace("T", " ");
-}
 
 export function formatMyAccount(response: RedmineMyAccountResponse): string {
   const user = response.user;

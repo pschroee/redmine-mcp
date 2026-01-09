@@ -1,18 +1,12 @@
 import type { RedmineIssue, RedmineIssuesResponse } from "../redmine/types.js";
 import { formatJournals, type NameLookup } from "./journals.js";
+import { formatDate, formatDateShort } from "./utils.js";
 
 /**
  * Options for formatting issues
  */
 export interface IssueFormatOptions {
   includeDescriptionDiffs?: boolean;
-}
-
-/**
- * Format a date string to readable format
- */
-function formatDate(isoDate: string): string {
-  return new Date(isoDate).toISOString().slice(0, 16).replace("T", " ");
 }
 
 /**
@@ -149,13 +143,6 @@ export function formatIssue(issue: RedmineIssue, lookup: NameLookup = {}, option
  */
 export function formatIssueResponse(response: { issue: RedmineIssue }, lookup: NameLookup = {}, options: IssueFormatOptions = {}): string {
   return formatIssue(response.issue, lookup, options);
-}
-
-/**
- * Format a date string to YYYY-MM-DD format
- */
-function formatDateShort(isoDate: string): string {
-  return new Date(isoDate).toISOString().slice(0, 10);
 }
 
 /**

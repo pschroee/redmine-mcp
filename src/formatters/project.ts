@@ -1,17 +1,11 @@
 import type { RedmineProject, RedmineProjectsResponse } from "../redmine/types.js";
+import { formatDate } from "./utils.js";
 
 const PROJECT_STATUS: Record<number, string> = {
   1: "Active",
   5: "Closed",
   9: "Archived",
 };
-
-/**
- * Format a date string to readable format
- */
-function formatDate(isoDate: string): string {
-  return new Date(isoDate).toISOString().slice(0, 16).replace("T", " ");
-}
 
 /**
  * Format a single project as complete Markdown

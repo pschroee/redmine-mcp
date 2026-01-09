@@ -1,11 +1,5 @@
 import type { RedmineWikiPage, RedmineWikiPageIndex, RedmineWikiPagesResponse } from "../redmine/types.js";
-
-/**
- * Format a date string to readable format (YYYY-MM-DD)
- */
-function formatDate(isoDate: string): string {
-  return new Date(isoDate).toISOString().slice(0, 10);
-}
+import { formatDate } from "./utils.js";
 
 /**
  * Format a single wiki page as Markdown

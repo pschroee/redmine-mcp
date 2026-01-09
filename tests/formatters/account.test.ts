@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { formatMyAccount } from "../../src/formatters/account.js";
 import type { RedmineMyAccountResponse } from "../../src/redmine/types.js";
+import { expectedDate } from "../helpers.js";
 
 const baseAccount: RedmineMyAccountResponse = {
   user: {
@@ -21,7 +22,7 @@ describe("formatMyAccount", () => {
     expect(result).toContain("# John Smith");
     expect(result).toContain("**Login:** jsmith");
     expect(result).toContain("| Email | john.smith@example.com |");
-    expect(result).toContain("| Created | 2024-01-15 10:30 |");
+    expect(result).toContain(`| Created | ${expectedDate("2024-01-15T10:30:00Z")} |`);
   });
 
   test("formats account with status", () => {
@@ -81,7 +82,7 @@ describe("formatMyAccount", () => {
     };
     const result = formatMyAccount(response);
 
-    expect(result).toContain("| Last Login | 2024-03-10 14:22 |");
+    expect(result).toContain(`| Last Login | ${expectedDate("2024-03-10T14:22:00Z")} |`);
   });
 
   test("formats account with 2FA", () => {
@@ -167,8 +168,8 @@ describe("formatMyAccount", () => {
     expect(result).toContain("**Status:** Active");
     expect(result).toContain("**Role:** Admin");
     expect(result).toContain("| Email | john.smith@example.com |");
-    expect(result).toContain("| Created | 2024-01-15 10:30 |");
-    expect(result).toContain("| Last Login | 2024-03-10 14:22 |");
+    expect(result).toContain(`| Created | ${expectedDate("2024-01-15T10:30:00Z")} |`);
+    expect(result).toContain(`| Last Login | ${expectedDate("2024-03-10T14:22:00Z")} |`);
     expect(result).toContain("| 2FA | totp |");
     expect(result).toContain("| API Key | secretkey123 |");
     expect(result).toContain("## Custom Fields");

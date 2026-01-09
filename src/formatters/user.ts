@@ -1,17 +1,11 @@
 import type { RedmineUser, RedmineUsersResponse } from "../redmine/types.js";
+import { formatDate } from "./utils.js";
 
 const USER_STATUS: Record<number, string> = {
   1: "Active",
   2: "Registered",
   3: "Locked",
 };
-
-/**
- * Format a date string to readable format
- */
-function formatDate(isoDate: string): string {
-  return new Date(isoDate).toISOString().slice(0, 16).replace("T", " ");
-}
 
 /**
  * Format a single user as complete Markdown
