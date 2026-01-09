@@ -8,6 +8,13 @@ import type { RedmineJournal } from "../redmine/types.js";
 export type NameLookup = Record<string, Record<string, string>>;
 
 /**
+ * Options for formatting journals
+ */
+export interface JournalFormatOptions {
+  includeDescriptionDiffs?: boolean;
+}
+
+/**
  * Fields that contain large text and should use diff formatting
  */
 const LARGE_TEXT_FIELDS = ["description"];
@@ -152,7 +159,7 @@ function resolveValue(fieldName: string, value: string | undefined, lookup: Name
 /**
  * Format a single journal detail (field change)
  */
-function formatDetail(detail: { property: string; name: string; old_value?: string; new_value?: string }, lookup: NameLookup): string {
+function formatDetail(detail: { property: string; name: string; old_value?: string; new_value?: string }, lookup: NameLookup, options: JournalFormatOptions = {}): string {
   const { property, name, old_value, new_value } = detail;
 
   // Handle attachment additions/removals
@@ -198,8 +205,11 @@ function formatDetail(detail: { property: string; name: string; old_value?: stri
       // Fall through to default formatting if parsing failed
     }
 
-    // Large text fields get diff formatting
+    // Large text fields get diff formatting (only if option enabled)
     if (LARGE_TEXT_FIELDS.includes(name) && old_value && new_value) {
+      if (!options.includeDescriptionDiffs) {
+        return `- ${name}: _(changed - use include_description_diffs to see diff)_`;
+      }
       const diff = generateDiff(old_value, new_value);
       return `- ${name}:\n\`\`\`diff\n${diff}\n\`\`\``;
     }
@@ -227,14 +237,16 @@ function formatDetail(detail: { property: string; name: string; old_value?: stri
 /**
  * Format a single journal entry as Markdown
  */
-function formatJournalEntry(journal: RedmineJournal, lookup: NameLookup): string {
+function formatJournalEntry(journal: RedmineJournal, index: number, lookup: NameLookup, options: JournalFormatOptions = {}): string {
   const lines: string[] = [];
 
-  // Header with date and user
+  // Header with note number, date and user
+  const noteNum = index + 1;
   const date = formatDate(journal.created_on);
   const user = journal.user.name;
   const privateTag = journal.private_notes ? " 🔒" : "";
-  lines.push(`### ${date} - ${user}${privateTag}`);
+  
+  lines.push(`### #${noteNum} - ${date} - ${user}${privateTag}`);
   lines.push("");
 
   // Notes (if any)
@@ -247,7 +259,7 @@ function formatJournalEntry(journal: RedmineJournal, lookup: NameLookup): string
   if (journal.details && journal.details.length > 0) {
     lines.push("**Changes:**");
     for (const detail of journal.details) {
-      lines.push(formatDetail(detail, lookup));
+      lines.push(formatDetail(detail, lookup, options));
     }
     lines.push("");
   }
@@ -258,13 +270,13 @@ function formatJournalEntry(journal: RedmineJournal, lookup: NameLookup): string
 /**
  * Format an array of journal entries as Markdown
  */
-export function formatJournals(journals: RedmineJournal[], lookup: NameLookup = {}): string {
+export function formatJournals(journals: RedmineJournal[], lookup: NameLookup = {}, options: JournalFormatOptions = {}): string {
   if (!journals || journals.length === 0) {
     return "";
   }
 
   const header = `## History (${journals.length} entries)\n\n`;
-  const entries = journals.map(j => formatJournalEntry(j, lookup)).join("\n---\n\n");
+  const entries = journals.map((j, i) => formatJournalEntry(j, i, lookup, options)).join("\n---\n\n");
 
   return header + entries;
 }

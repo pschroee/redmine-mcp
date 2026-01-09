@@ -2,6 +2,13 @@ import type { RedmineIssue, RedmineIssuesResponse } from "../redmine/types.js";
 import { formatJournals, type NameLookup } from "./journals.js";
 
 /**
+ * Options for formatting issues
+ */
+export interface IssueFormatOptions {
+  includeDescriptionDiffs?: boolean;
+}
+
+/**
  * Format a date string to readable format
  */
 function formatDate(isoDate: string): string {
@@ -11,7 +18,7 @@ function formatDate(isoDate: string): string {
 /**
  * Format an issue as complete Markdown
  */
-export function formatIssue(issue: RedmineIssue, lookup: NameLookup = {}): string {
+export function formatIssue(issue: RedmineIssue, lookup: NameLookup = {}, options: IssueFormatOptions = {}): string {
   const lines: string[] = [];
 
   // Title
@@ -129,7 +136,9 @@ export function formatIssue(issue: RedmineIssue, lookup: NameLookup = {}): strin
 
   // Journals (history)
   if (issue.journals && issue.journals.length > 0) {
-    lines.push(formatJournals(issue.journals, lookup));
+    lines.push(formatJournals(issue.journals, lookup, {
+      includeDescriptionDiffs: options.includeDescriptionDiffs,
+    }));
   }
 
   return lines.join("\n");
@@ -138,8 +147,8 @@ export function formatIssue(issue: RedmineIssue, lookup: NameLookup = {}): strin
 /**
  * Format an issue API response as Markdown
  */
-export function formatIssueResponse(response: { issue: RedmineIssue }, lookup: NameLookup = {}): string {
-  return formatIssue(response.issue, lookup);
+export function formatIssueResponse(response: { issue: RedmineIssue }, lookup: NameLookup = {}, options: IssueFormatOptions = {}): string {
+  return formatIssue(response.issue, lookup, options);
 }
 
 /**

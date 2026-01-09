@@ -51,6 +51,13 @@ export class RedmineClient {
     this.baseUrl = baseUrl.replace(/\/$/, "");
   }
 
+  /**
+   * Get the base URL of the Redmine instance
+   */
+  getBaseUrl(): string {
+    return this.baseUrl;
+  }
+
   private async request<T>(
     method: string,
     path: string,
