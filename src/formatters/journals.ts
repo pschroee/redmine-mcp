@@ -270,9 +270,14 @@ export function formatJournals(journals: RedmineJournal[], lookup: NameLookup = 
   }
 
   const header = `## History (${journals.length} entries)\n\n`;
-  
+
+  // Sort journals chronologically (oldest first) to ensure correct numbering
+  const sortedJournals = [...journals].sort((a, b) =>
+    new Date(a.created_on).getTime() - new Date(b.created_on).getTime()
+  );
+
   // Format entries with correct note numbers (1 = oldest), then reverse for display (newest first)
-  const formattedEntries = journals.map((j, i) => formatJournalEntry(j, i + 1, lookup, options));
+  const formattedEntries = sortedJournals.map((j, i) => formatJournalEntry(j, i + 1, lookup, options));
   const entries = formattedEntries.reverse().join("\n---\n\n");
 
   return header + entries;
