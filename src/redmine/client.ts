@@ -126,6 +126,7 @@ export class RedmineClient {
     limit?: number;
     offset?: number;
     query_id?: number;
+    tags?: string; // From redmine_tags plugin - comma-separated tag names
   }): Promise<RedmineResult<RedmineIssuesResponse>> {
     let projectId = params?.project_id;
 
@@ -167,6 +168,7 @@ export class RedmineClient {
     if (params?.limit) query.set("limit", String(params.limit));
     if (params?.offset) query.set("offset", String(params.offset));
     if (params?.query_id) query.set("query_id", String(params.query_id));
+    if (params?.tags) query.set("tags", params.tags);
 
     const queryString = query.toString();
     const path = `/issues.json${queryString ? `?${queryString}` : ""}`;
