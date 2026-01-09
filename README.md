@@ -38,8 +38,13 @@ npx @pschroee/mcp-server --url=https://your-redmine.com --api-key=your-api-key
 | `relations` | 9 | Issue Relations & Versions |
 | `search` | 1 | Global Search |
 | `account` | 1 | Current User Account |
+| `time` | 5 | Time Entry tracking (CRUD, filtering) |
+| `enumerations` | 3 | Issue Priorities, Time Entry Activities, Document Categories |
+| `memberships` | 5 | Project Memberships (CRUD) |
+| `roles` | 2 | Roles listing and details |
+| `admin` | 11 | Users & Groups management (admin only) |
 
-**Total: 44 Tools**
+**Total: 70 Tools**
 
 ## Usage Examples
 
@@ -246,6 +251,47 @@ Add to your Claude Desktop config (`%APPDATA%\Claude\claude_desktop_config.json`
 
 - `get_my_account` - Get current user info
 
+### Time Entries
+
+- `list_time_entries` - List time entries with filters (project, user, date range)
+- `get_time_entry` - Get time entry details
+- `create_time_entry` - Log time on issue or project
+- `update_time_entry` - Update time entry
+- `delete_time_entry` - Delete time entry
+
+### Enumerations
+
+- `list_issue_priorities` - List all issue priorities
+- `list_time_entry_activities` - List all time entry activities
+- `list_document_categories` - List all document categories
+
+### Memberships
+
+- `list_project_memberships` - List project members
+- `get_membership` - Get membership details
+- `create_project_membership` - Add member to project
+- `update_membership` - Update member roles
+- `delete_membership` - Remove member from project
+
+### Roles
+
+- `list_roles` - List all roles
+- `get_role` - Get role with permissions
+
+### Admin (Users & Groups)
+
+- `list_users` - List users with filters
+- `get_user` - Get user details
+- `create_user` - Create new user
+- `update_user` - Update user
+- `delete_user` - Delete user
+- `list_groups` - List all groups
+- `get_group` - Get group details
+- `create_group` - Create group
+- `delete_group` - Delete group
+- `add_user_to_group` - Add user to group
+- `remove_user_from_group` - Remove user from group
+
 ## Development
 
 ```bash
@@ -283,7 +329,7 @@ npm test
 
 ### Test Coverage
 
-The test suite includes 124 tests across 7 test files:
+The test suite includes 195 tests across 12 test files:
 
 | Test File | Tests | Description |
 |-----------|-------|-------------|
@@ -294,6 +340,11 @@ The test suite includes 124 tests across 7 test files:
 | `wiki.test.ts` | 14 | Wiki Pages CRUD |
 | `files.test.ts` | 11 | File uploads and attachments |
 | `search.test.ts` | 12 | Global search functionality |
+| `enumerations.test.ts` | 4 | Issue priorities, activities, document categories |
+| `time.test.ts` | 17 | Time entry CRUD operations |
+| `roles.test.ts` | 4 | Roles listing and details |
+| `admin.test.ts` | 33 | Users and Groups management |
+| `memberships.test.ts` | 13 | Project membership operations |
 
 Tests are run sequentially and share state. A global setup creates the test project with all required modules enabled, and a global teardown cleans up all test data.
 
