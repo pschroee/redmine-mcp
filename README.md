@@ -11,7 +11,7 @@ npm install -g @pschroee/redmine-mcp
 Or use directly with npx:
 
 ```bash
-npx @pschroee/redmine-mcp --url=https://your-redmine.com --api-key=your-api-key
+npx @pschroee/redmine-mcp@latest --url=https://your-redmine.com --api-key=your-api-key
 ```
 
 ## Configuration
@@ -51,19 +51,19 @@ npx @pschroee/redmine-mcp --url=https://your-redmine.com --api-key=your-api-key
 ### Load all tools (default)
 
 ```bash
-npx @pschroee/redmine-mcp --url=https://redmine.example.com --api-key=abc123
+npx @pschroee/redmine-mcp@latest --url=https://redmine.example.com --api-key=abc123
 ```
 
 ### Load only specific groups
 
 ```bash
-npx @pschroee/redmine-mcp --tools=core,metadata
+npx @pschroee/redmine-mcp@latest --tools=core,metadata
 ```
 
 ### Exclude specific groups
 
 ```bash
-npx @pschroee/redmine-mcp --exclude=wiki,files
+npx @pschroee/redmine-mcp@latest --exclude=wiki,files
 ```
 
 ## Claude Configuration
