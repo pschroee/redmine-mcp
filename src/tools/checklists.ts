@@ -7,7 +7,7 @@ export function registerChecklistsTools(
   client: RedmineClient
 ): void {
   server.registerTool(
-    "list_checklists",
+    "list_checklist_items",
     {
       description: "List all checklist items for an issue (requires redmine_checklists plugin)",
       inputSchema: {
@@ -23,7 +23,7 @@ export function registerChecklistsTools(
   );
 
   server.registerTool(
-    "get_checklist",
+    "get_checklist_item",
     {
       description: "Get a specific checklist item by ID (requires redmine_checklists plugin)",
       inputSchema: {
@@ -39,7 +39,7 @@ export function registerChecklistsTools(
   );
 
   server.registerTool(
-    "create_checklist",
+    "create_checklist_item",
     {
       description: "Create a new checklist item for an issue (requires redmine_checklists plugin)",
       inputSchema: {
@@ -59,7 +59,7 @@ export function registerChecklistsTools(
   );
 
   server.registerTool(
-    "update_checklist",
+    "update_checklist_item",
     {
       description: "Update an existing checklist item (requires redmine_checklists plugin)",
       inputSchema: {
@@ -79,7 +79,7 @@ export function registerChecklistsTools(
   );
 
   server.registerTool(
-    "delete_checklist",
+    "delete_checklist_item",
     {
       description: "Delete a checklist item (requires redmine_checklists plugin)",
       inputSchema: {

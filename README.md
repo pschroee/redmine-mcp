@@ -331,11 +331,11 @@ Add to your Claude Desktop config (`%APPDATA%\Claude\claude_desktop_config.json`
 
 > Requires [redmine_checklists](https://www.redmineup.com/pages/plugins/checklists) plugin
 
-- `list_checklists` - List checklist items for an issue
-- `get_checklist` - Get checklist item details
-- `create_checklist` - Create checklist item
-- `update_checklist` - Update checklist item (text, done status)
-- `delete_checklist` - Delete checklist item
+- `list_checklist_items` - List checklist items for an issue
+- `get_checklist_item` - Get checklist item details
+- `create_checklist_item` - Create checklist item
+- `update_checklist_item` - Update checklist item (text, done status)
+- `delete_checklist_item` - Delete checklist item
 
 ### Plugin: Agile (plugin_agile)
 
