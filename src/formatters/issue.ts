@@ -185,7 +185,7 @@ export function formatIssueList(response: RedmineIssuesResponse): string {
   const customFieldNames = customFieldIds.map(id => customFieldMap.get(id)!);
 
   // Table header
-  const headerCols = ["ID", "Subject", "Status", "Priority", "Assigned", "Updated", ...customFieldNames];
+  const headerCols = ["ID", "Subject", "Status", "Priority", "Assigned", "Version", "Created", "Updated", ...customFieldNames];
   lines.push("| " + headerCols.join(" | ") + " |");
   lines.push("|" + headerCols.map(() => "---").join("|") + "|");
 
@@ -196,6 +196,8 @@ export function formatIssueList(response: RedmineIssuesResponse): string {
     const status = issue.status.name;
     const priority = issue.priority.name;
     const assigned = issue.assigned_to?.name ?? "_(unassigned)_";
+    const version = issue.fixed_version?.name ?? "";
+    const created = formatDateShort(issue.created_on);
     const updated = formatDateShort(issue.updated_on);
 
     // Build custom field values in order
@@ -210,7 +212,7 @@ export function formatIssueList(response: RedmineIssuesResponse): string {
       }
     }
 
-    const cols = [id, subject, status, priority, assigned, updated, ...cfValues];
+    const cols = [id, subject, status, priority, assigned, version, created, updated, ...cfValues];
     lines.push("| " + cols.join(" | ") + " |");
   }
 

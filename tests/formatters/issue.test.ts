@@ -54,10 +54,10 @@ describe("formatIssueList", () => {
     const result = formatIssueList(response);
 
     expect(result).toContain("# Issues (3 of 3)");
-    expect(result).toContain("| ID | Subject | Status | Priority | Assigned | Updated |");
-    expect(result).toContain("| #1 | First issue | New | Normal | Alice | 2024-01-16 |");
-    expect(result).toContain("| #2 | Second issue | In Progress | High | Bob | 2024-01-17 |");
-    expect(result).toContain("| #3 | Third issue | Resolved | Low | Charlie | 2024-01-18 |");
+    expect(result).toContain("| ID | Subject | Status | Priority | Assigned | Version | Created | Updated |");
+    expect(result).toContain("| #1 | First issue | New | Normal | Alice |  | 2024-01-15 | 2024-01-16 |");
+    expect(result).toContain("| #2 | Second issue | In Progress | High | Bob |  | 2024-01-15 | 2024-01-17 |");
+    expect(result).toContain("| #3 | Third issue | Resolved | Low | Charlie |  | 2024-01-15 | 2024-01-18 |");
     // No pagination info when showing all
     expect(result).not.toContain("_Showing");
   });
@@ -95,7 +95,7 @@ describe("formatIssueList", () => {
     const result = formatIssueList(response);
 
     expect(result).toContain("_(unassigned)_");
-    expect(result).toContain("| #5 | Unassigned task | New | Normal | _(unassigned)_ | 2024-02-01 |");
+    expect(result).toContain("| #5 | Unassigned task | New | Normal | _(unassigned)_ |  | 2024-01-15 | 2024-02-01 |");
   });
 
   it("should show pagination info when offset > 0", () => {
@@ -161,9 +161,9 @@ describe("formatIssueList", () => {
 
     const result = formatIssueList(response);
 
-    expect(result).toContain("| ID | Subject | Status | Priority | Assigned | Updated | Sprint | Story Points |");
-    expect(result).toContain("| #1 | Issue with custom fields | New | Normal | _(unassigned)_ | 2024-01-20 | Sprint 5 | 8 |");
-    expect(result).toContain("| #2 | Another issue | New | Normal | _(unassigned)_ | 2024-01-21 | Sprint 6 | 3 |");
+    expect(result).toContain("| ID | Subject | Status | Priority | Assigned | Version | Created | Updated | Sprint | Story Points |");
+    expect(result).toContain("| #1 | Issue with custom fields | New | Normal | _(unassigned)_ |  | 2024-01-15 | 2024-01-20 | Sprint 5 | 8 |");
+    expect(result).toContain("| #2 | Another issue | New | Normal | _(unassigned)_ |  | 2024-01-15 | 2024-01-21 | Sprint 6 | 3 |");
   });
 
   it("should handle issues with different custom fields", () => {
@@ -194,8 +194,8 @@ describe("formatIssueList", () => {
     const result = formatIssueList(response);
 
     expect(result).toContain("| Sprint | Story Points |");
-    expect(result).toContain("| #1 | Issue A | New | Normal | _(unassigned)_ | 2024-01-20 | Sprint 5 |  |");
-    expect(result).toContain("| #2 | Issue B | New | Normal | _(unassigned)_ | 2024-01-21 |  | 5 |");
+    expect(result).toContain("| #1 | Issue A | New | Normal | _(unassigned)_ |  | 2024-01-15 | 2024-01-20 | Sprint 5 |  |");
+    expect(result).toContain("| #2 | Issue B | New | Normal | _(unassigned)_ |  | 2024-01-15 | 2024-01-21 |  | 5 |");
   });
 
   it("should handle custom fields with array values", () => {
@@ -237,8 +237,8 @@ describe("formatIssueList", () => {
 
     const result = formatIssueList(response);
 
-    // Should not have extra columns
-    expect(result).toContain("| ID | Subject | Status | Priority | Assigned | Updated |");
-    expect(result).not.toContain("| ID | Subject | Status | Priority | Assigned | Updated | ");
+    // Should not have extra columns beyond the standard ones
+    expect(result).toContain("| ID | Subject | Status | Priority | Assigned | Version | Created | Updated |");
+    expect(result).not.toContain("| ID | Subject | Status | Priority | Assigned | Version | Created | Updated | ");
   });
 });
