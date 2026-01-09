@@ -262,6 +262,8 @@ function formatJournalEntry(journal: RedmineJournal, index: number, lookup: Name
 
 /**
  * Format an array of journal entries as Markdown
+ * Entries are displayed in reverse chronological order (newest first)
+ * Note numbers are preserved (1 = oldest, highest = newest)
  */
 export function formatJournals(journals: RedmineJournal[], lookup: NameLookup = {}, options: JournalFormatOptions = {}): string {
   if (!journals || journals.length === 0) {
@@ -269,7 +271,10 @@ export function formatJournals(journals: RedmineJournal[], lookup: NameLookup = 
   }
 
   const header = `## History (${journals.length} entries)\n\n`;
-  const entries = journals.map((j, i) => formatJournalEntry(j, i, lookup, options)).join("\n---\n\n");
+  
+  // Format entries with their original indices (for note numbers), then reverse for display
+  const formattedEntries = journals.map((j, i) => formatJournalEntry(j, i, lookup, options));
+  const entries = formattedEntries.reverse().join("\n---\n\n");
 
   return header + entries;
 }
