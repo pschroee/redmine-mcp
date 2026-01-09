@@ -176,8 +176,8 @@ export function registerMetadataTools(
         project_id: z.string().optional().describe("Filter queries by project identifier"),
       },
     },
-    async (params: { project_id?: string | number }) => {
-      const result = await client.listQueries(params.project_id ? { project_id: params.project_id } : undefined);
+    async (params: { project_id?: string }) => {
+      const result = await client.listQueries();
       if ("error" in result) {
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
@@ -186,20 +186,32 @@ export function registerMetadataTools(
 
       // Build project lookup for resolving project names
       const projectLookup: ProjectLookup = {};
-      const projectIds = new Set(result.queries.map(q => q.project_id).filter((id): id is number => id != null));
-      if (projectIds.size > 0) {
-        const projectsResult = await client.listProjects({ limit: 100 });
-        if (!("error" in projectsResult)) {
-          for (const project of projectsResult.projects) {
-            if (projectIds.has(project.id)) {
-              projectLookup[project.id] = project.name;
-            }
+      const projectsResult = await client.listProjects({ limit: 100 });
+      let filterProjectId: number | undefined;
+
+      if (!("error" in projectsResult)) {
+        for (const project of projectsResult.projects) {
+          projectLookup[project.id] = project.name;
+          // Find the numeric ID for the filter project identifier
+          if (params.project_id && project.identifier === params.project_id) {
+            filterProjectId = project.id;
           }
         }
       }
 
+      // Filter queries by project if requested
+      let queries = result.queries;
+      if (params.project_id) {
+        if (filterProjectId === undefined) {
+          return {
+            content: [{ type: "text", text: `Project "${params.project_id}" not found.` }],
+          };
+        }
+        queries = queries.filter(q => q.project_id === filterProjectId);
+      }
+
       return {
-        content: [{ type: "text", text: formatQueryList(result, projectLookup) }],
+        content: [{ type: "text", text: formatQueryList({ queries }, projectLookup) }],
       };
     }
   );
