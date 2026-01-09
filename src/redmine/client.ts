@@ -22,6 +22,19 @@ import type {
   RedmineQueriesResponse,
   RedmineSearchResponse,
   RedmineMyAccountResponse,
+  RedmineTimeEntry,
+  RedmineTimeEntriesResponse,
+  RedmineIssuePrioritiesResponse,
+  RedmineTimeEntryActivitiesResponse,
+  RedmineDocumentCategoriesResponse,
+  RedmineUser,
+  RedmineUsersResponse,
+  RedmineGroup,
+  RedmineGroupsResponse,
+  RedmineMembership,
+  RedmineMembershipsResponse,
+  RedmineRole,
+  RedmineRolesResponse,
 } from "./types.js";
 
 export class RedmineClient {
@@ -578,5 +591,241 @@ export class RedmineClient {
 
   async getMyAccount(): Promise<RedmineResult<RedmineMyAccountResponse>> {
     return this.request<RedmineMyAccountResponse>("GET", "/my/account.json");
+  }
+
+  // ==================== TIME ENTRIES ====================
+
+  async listTimeEntries(params?: {
+    project_id?: string | number;
+    user_id?: number | string;
+    spent_on?: string;
+    from?: string;
+    to?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<RedmineResult<RedmineTimeEntriesResponse>> {
+    const query = new URLSearchParams();
+    if (params?.project_id) query.set("project_id", String(params.project_id));
+    if (params?.user_id) query.set("user_id", String(params.user_id));
+    if (params?.spent_on) query.set("spent_on", params.spent_on);
+    if (params?.from) query.set("from", params.from);
+    if (params?.to) query.set("to", params.to);
+    if (params?.limit) query.set("limit", String(params.limit));
+    if (params?.offset) query.set("offset", String(params.offset));
+
+    const queryString = query.toString();
+    const path = `/time_entries.json${queryString ? `?${queryString}` : ""}`;
+    return this.request<RedmineTimeEntriesResponse>("GET", path);
+  }
+
+  async getTimeEntry(id: number): Promise<RedmineResult<{ time_entry: RedmineTimeEntry }>> {
+    return this.request<{ time_entry: RedmineTimeEntry }>("GET", `/time_entries/${id}.json`);
+  }
+
+  async createTimeEntry(data: {
+    issue_id?: number;
+    project_id?: string | number;
+    hours: number;
+    activity_id?: number;
+    spent_on?: string;
+    comments?: string;
+    user_id?: number;
+  }): Promise<RedmineResult<{ time_entry: RedmineTimeEntry }>> {
+    return this.request<{ time_entry: RedmineTimeEntry }>("POST", "/time_entries.json", {
+      time_entry: data,
+    });
+  }
+
+  async updateTimeEntry(
+    id: number,
+    data: {
+      hours?: number;
+      activity_id?: number;
+      spent_on?: string;
+      comments?: string;
+    }
+  ): Promise<RedmineResult<void>> {
+    return this.request<void>("PUT", `/time_entries/${id}.json`, {
+      time_entry: data,
+    });
+  }
+
+  async deleteTimeEntry(id: number): Promise<RedmineResult<void>> {
+    return this.request<void>("DELETE", `/time_entries/${id}.json`);
+  }
+
+  // ==================== ENUMERATIONS ====================
+
+  async listIssuePriorities(): Promise<RedmineResult<RedmineIssuePrioritiesResponse>> {
+    return this.request<RedmineIssuePrioritiesResponse>("GET", "/enumerations/issue_priorities.json");
+  }
+
+  async listTimeEntryActivities(): Promise<RedmineResult<RedmineTimeEntryActivitiesResponse>> {
+    return this.request<RedmineTimeEntryActivitiesResponse>("GET", "/enumerations/time_entry_activities.json");
+  }
+
+  async listDocumentCategories(): Promise<RedmineResult<RedmineDocumentCategoriesResponse>> {
+    return this.request<RedmineDocumentCategoriesResponse>("GET", "/enumerations/document_categories.json");
+  }
+
+  // ==================== USERS ====================
+
+  async listUsers(params?: {
+    status?: number;
+    name?: string;
+    group_id?: number;
+    limit?: number;
+    offset?: number;
+  }): Promise<RedmineResult<RedmineUsersResponse>> {
+    const query = new URLSearchParams();
+    if (params?.status !== undefined) query.set("status", String(params.status));
+    if (params?.name) query.set("name", params.name);
+    if (params?.group_id) query.set("group_id", String(params.group_id));
+    if (params?.limit) query.set("limit", String(params.limit));
+    if (params?.offset) query.set("offset", String(params.offset));
+
+    const queryString = query.toString();
+    const path = `/users.json${queryString ? `?${queryString}` : ""}`;
+    return this.request<RedmineUsersResponse>("GET", path);
+  }
+
+  async getUser(
+    id: number | "current",
+    include?: string
+  ): Promise<RedmineResult<{ user: RedmineUser }>> {
+    const query = include ? `?include=${include}` : "";
+    return this.request<{ user: RedmineUser }>("GET", `/users/${id}.json${query}`);
+  }
+
+  async createUser(data: {
+    login: string;
+    firstname: string;
+    lastname: string;
+    mail: string;
+    password?: string;
+    generate_password?: boolean;
+    must_change_passwd?: boolean;
+    auth_source_id?: number;
+    mail_notification?: string;
+    admin?: boolean;
+    send_information?: boolean;
+  }): Promise<RedmineResult<{ user: RedmineUser }>> {
+    return this.request<{ user: RedmineUser }>("POST", "/users.json", {
+      user: data,
+    });
+  }
+
+  async updateUser(
+    id: number,
+    data: {
+      login?: string;
+      firstname?: string;
+      lastname?: string;
+      mail?: string;
+      password?: string;
+      admin?: boolean;
+      status?: number;
+    }
+  ): Promise<RedmineResult<void>> {
+    return this.request<void>("PUT", `/users/${id}.json`, {
+      user: data,
+    });
+  }
+
+  async deleteUser(id: number): Promise<RedmineResult<void>> {
+    return this.request<void>("DELETE", `/users/${id}.json`);
+  }
+
+  // ==================== GROUPS ====================
+
+  async listGroups(): Promise<RedmineResult<RedmineGroupsResponse>> {
+    return this.request<RedmineGroupsResponse>("GET", "/groups.json");
+  }
+
+  async getGroup(
+    id: number,
+    include?: string
+  ): Promise<RedmineResult<{ group: RedmineGroup }>> {
+    const query = include ? `?include=${include}` : "";
+    return this.request<{ group: RedmineGroup }>("GET", `/groups/${id}.json${query}`);
+  }
+
+  async createGroup(data: {
+    name: string;
+    user_ids?: number[];
+  }): Promise<RedmineResult<{ group: RedmineGroup }>> {
+    return this.request<{ group: RedmineGroup }>("POST", "/groups.json", {
+      group: data,
+    });
+  }
+
+  async deleteGroup(id: number): Promise<RedmineResult<void>> {
+    return this.request<void>("DELETE", `/groups/${id}.json`);
+  }
+
+  async addUserToGroup(groupId: number, userId: number): Promise<RedmineResult<void>> {
+    return this.request<void>("POST", `/groups/${groupId}/users.json`, {
+      user_id: userId,
+    });
+  }
+
+  async removeUserFromGroup(groupId: number, userId: number): Promise<RedmineResult<void>> {
+    return this.request<void>("DELETE", `/groups/${groupId}/users/${userId}.json`);
+  }
+
+  // ==================== MEMBERSHIPS ====================
+
+  async listProjectMemberships(
+    projectId: string | number,
+    params?: { limit?: number; offset?: number }
+  ): Promise<RedmineResult<RedmineMembershipsResponse>> {
+    const query = new URLSearchParams();
+    if (params?.limit) query.set("limit", String(params.limit));
+    if (params?.offset) query.set("offset", String(params.offset));
+
+    const queryString = query.toString();
+    const path = `/projects/${projectId}/memberships.json${queryString ? `?${queryString}` : ""}`;
+    return this.request<RedmineMembershipsResponse>("GET", path);
+  }
+
+  async getMembership(id: number): Promise<RedmineResult<{ membership: RedmineMembership }>> {
+    return this.request<{ membership: RedmineMembership }>("GET", `/memberships/${id}.json`);
+  }
+
+  async createProjectMembership(
+    projectId: string | number,
+    data: {
+      user_id: number;
+      role_ids: number[];
+    }
+  ): Promise<RedmineResult<{ membership: RedmineMembership }>> {
+    return this.request<{ membership: RedmineMembership }>(
+      "POST",
+      `/projects/${projectId}/memberships.json`,
+      { membership: data }
+    );
+  }
+
+  async updateMembership(
+    id: number,
+    data: { role_ids: number[] }
+  ): Promise<RedmineResult<void>> {
+    return this.request<void>("PUT", `/memberships/${id}.json`, {
+      membership: data,
+    });
+  }
+
+  async deleteMembership(id: number): Promise<RedmineResult<void>> {
+    return this.request<void>("DELETE", `/memberships/${id}.json`);
+  }
+
+  // ==================== ROLES ====================
+
+  async listRoles(): Promise<RedmineResult<RedmineRolesResponse>> {
+    return this.request<RedmineRolesResponse>("GET", "/roles.json");
+  }
+
+  async getRole(id: number): Promise<RedmineResult<{ role: RedmineRole }>> {
+    return this.request<{ role: RedmineRole }>("GET", `/roles/${id}.json`);
   }
 }
