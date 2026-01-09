@@ -52,7 +52,7 @@ export function registerCoreTools(
       inputSchema: {
         issue_id: z.number().describe("The issue ID"),
         include: z.string().optional().describe("Include: attachments, relations, journals, watchers, children, changesets, allowed_statuses"),
-        include_description_diffs: z.boolean().optional().default(false).describe("Include full description diffs in history (can be verbose)"),
+        include_description_diffs: z.boolean().optional().default(true).describe("Include full description diffs in history (can be verbose)"),
       },
     },
     async (params) => {
