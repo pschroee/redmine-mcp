@@ -14,7 +14,7 @@ export function registerCoreTools(
     {
       description: "List issues from Redmine with optional filters and sorting",
       inputSchema: {
-        project_id: z.union([z.string(), z.number()]).optional().describe("Filter by project ID or identifier"),
+        project_id: z.string().optional().describe("Filter by project identifier"),
         tracker_id: z.number().optional().describe("Filter by tracker ID"),
         status_id: z.union([z.string(), z.number()]).optional().describe("Filter by status: 'open', 'closed', '*', or status ID"),
         assigned_to_id: z.union([z.number(), z.string()]).optional().describe("Filter by assigned user ID or 'me'"),
@@ -110,7 +110,7 @@ export function registerCoreTools(
     {
       description: "Create a new issue in Redmine",
       inputSchema: {
-        project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+        project_id: z.string().describe("Project identifier"),
         subject: z.string().describe("Issue subject/title"),
         description: z.string().optional().describe("Issue description (supports Textile/Markdown)"),
         tracker_id: z.number().optional().describe("Tracker ID (e.g., Bug, Feature)"),
@@ -147,7 +147,7 @@ export function registerCoreTools(
         issue_id: z.number().describe("The issue ID to update"),
         subject: z.string().optional().describe("New subject/title"),
         description: z.string().optional().describe("New description"),
-        project_id: z.union([z.string(), z.number()]).optional().describe("Move to different project"),
+        project_id: z.string().optional().describe("Move to different project"),
         tracker_id: z.number().optional().describe("Change tracker"),
         status_id: z.number().optional().describe("Change status"),
         priority_id: z.number().optional().describe("Change priority"),
@@ -257,7 +257,7 @@ export function registerCoreTools(
     {
       description: "Get details of a specific project",
       inputSchema: {
-        project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+        project_id: z.string().describe("Project identifier"),
         include: z.string().optional().describe("Include: trackers, issue_categories, enabled_modules, time_entry_activities, issue_custom_fields"),
       },
     },
@@ -306,7 +306,7 @@ export function registerCoreTools(
     {
       description: "Update an existing project",
       inputSchema: {
-        project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+        project_id: z.string().describe("Project identifier"),
         name: z.string().optional().describe("New project name"),
         description: z.string().optional().describe("New description"),
         homepage: z.string().optional().describe("New homepage URL"),
@@ -334,7 +334,7 @@ export function registerCoreTools(
     {
       description: "Delete a project permanently (requires admin privileges)",
       inputSchema: {
-        project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier to delete"),
+        project_id: z.string().describe("Project identifier to delete"),
       },
     },
     async (params) => {
@@ -350,7 +350,7 @@ export function registerCoreTools(
     {
       description: "Archive a project (Redmine 5.0+)",
       inputSchema: {
-        project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier to archive"),
+        project_id: z.string().describe("Project identifier to archive"),
       },
     },
     async (params) => {
@@ -366,7 +366,7 @@ export function registerCoreTools(
     {
       description: "Unarchive a project (Redmine 5.0+)",
       inputSchema: {
-        project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier to unarchive"),
+        project_id: z.string().describe("Project identifier to unarchive"),
       },
     },
     async (params) => {

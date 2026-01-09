@@ -74,7 +74,7 @@ export function registerFilesTools(
     {
       description: "List all files attached to a project",
       inputSchema: {
-        project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+        project_id: z.string().describe("Project identifier"),
       },
     },
     async (params) => {
@@ -95,7 +95,7 @@ export function registerFilesTools(
     {
       description: "Attach an uploaded file to a project",
       inputSchema: {
-        project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+        project_id: z.string().describe("Project identifier"),
         token: z.string().describe("Upload token from upload_file"),
         version_id: z.number().optional().describe("Associated version ID"),
         filename: z.string().optional().describe("Override filename"),

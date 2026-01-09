@@ -14,7 +14,7 @@ export function registerAgileTools(
     {
       description: "List all agile sprints for a project (requires redmine_agile plugin)",
       inputSchema: {
-        project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+        project_id: z.string().describe("Project identifier"),
       },
     },
     async (params) => {
@@ -35,7 +35,7 @@ export function registerAgileTools(
     {
       description: "Get details of a specific agile sprint (requires redmine_agile plugin)",
       inputSchema: {
-        project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+        project_id: z.string().describe("Project identifier"),
         sprint_id: z.number().describe("The sprint ID"),
       },
     },
@@ -57,7 +57,7 @@ export function registerAgileTools(
     {
       description: "Create a new agile sprint for a project (requires redmine_agile plugin)",
       inputSchema: {
-        project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+        project_id: z.string().describe("Project identifier"),
         name: z.string().describe("Sprint name"),
         status: z.string().optional().describe("Sprint status: open, active, closed"),
         start_date: z.string().optional().describe("Start date (YYYY-MM-DD)"),
@@ -80,7 +80,7 @@ export function registerAgileTools(
     {
       description: "Update an existing agile sprint (requires redmine_agile plugin)",
       inputSchema: {
-        project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+        project_id: z.string().describe("Project identifier"),
         sprint_id: z.number().describe("The sprint ID to update"),
         name: z.string().optional().describe("New sprint name"),
         status: z.string().optional().describe("Sprint status: open, active, closed"),
@@ -104,7 +104,7 @@ export function registerAgileTools(
     {
       description: "Delete an agile sprint (requires redmine_agile plugin)",
       inputSchema: {
-        project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+        project_id: z.string().describe("Project identifier"),
         sprint_id: z.number().describe("The sprint ID to delete"),
       },
     },

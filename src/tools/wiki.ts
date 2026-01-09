@@ -12,7 +12,7 @@ export function registerWikiTools(
     {
       description: "List all wiki pages in a project",
       inputSchema: {
-        project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+        project_id: z.string().describe("Project identifier"),
       },
     },
     async (params) => {
@@ -33,7 +33,7 @@ export function registerWikiTools(
     {
       description: "Get content of a specific wiki page",
       inputSchema: {
-        project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+        project_id: z.string().describe("Project identifier"),
         page_name: z.string().describe("Wiki page name/title"),
         version: z.number().optional().describe("Specific version number to retrieve"),
         include: z.string().optional().describe("Include: attachments"),
@@ -60,7 +60,7 @@ export function registerWikiTools(
     {
       description: "Create a new wiki page in a project",
       inputSchema: {
-        project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+        project_id: z.string().describe("Project identifier"),
         page_name: z.string().describe("Wiki page name/title (used in URL)"),
         text: z.string().describe("Page content (supports Textile/Markdown)"),
         comments: z.string().optional().describe("Edit comment for version history"),
@@ -81,7 +81,7 @@ export function registerWikiTools(
     {
       description: "Update an existing wiki page",
       inputSchema: {
-        project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+        project_id: z.string().describe("Project identifier"),
         page_name: z.string().describe("Wiki page name/title"),
         text: z.string().describe("New page content"),
         comments: z.string().optional().describe("Edit comment for version history"),
@@ -102,7 +102,7 @@ export function registerWikiTools(
     {
       description: "Delete a wiki page and all its history",
       inputSchema: {
-        project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+        project_id: z.string().describe("Project identifier"),
         page_name: z.string().describe("Wiki page name/title to delete"),
       },
     },

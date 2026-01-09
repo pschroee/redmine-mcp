@@ -54,7 +54,7 @@ export function registerMetadataTools(
     {
       description: "List all issue categories for a project",
       inputSchema: {
-        project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+        project_id: z.string().describe("Project identifier"),
       },
     },
     async (params) => {
@@ -96,7 +96,7 @@ export function registerMetadataTools(
     {
       description: "Create a new issue category in a project",
       inputSchema: {
-        project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+        project_id: z.string().describe("Project identifier"),
         name: z.string().describe("Category name"),
         assigned_to_id: z.number().optional().describe("Default assignee user ID for this category"),
       },
@@ -173,7 +173,7 @@ export function registerMetadataTools(
     {
       description: "List all saved issue queries (public and private)",
       inputSchema: {
-        project_id: z.union([z.string(), z.number()]).optional().describe("Filter queries by project ID or identifier"),
+        project_id: z.string().optional().describe("Filter queries by project identifier"),
       },
     },
     async (params: { project_id?: string | number }) => {

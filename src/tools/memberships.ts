@@ -12,7 +12,7 @@ export function registerMembershipsTools(
     {
       description: "List all memberships (users and groups) for a project",
       inputSchema: {
-        project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+        project_id: z.string().describe("Project identifier"),
         limit: z.number().optional().describe("Maximum results"),
         offset: z.number().optional().describe("Skip first N results"),
       },
@@ -57,7 +57,7 @@ export function registerMembershipsTools(
     {
       description: "Add a user or group to a project with specified roles",
       inputSchema: {
-        project_id: z.union([z.string(), z.number()]).describe("Project ID or identifier"),
+        project_id: z.string().describe("Project identifier"),
         user_id: z.number().describe("User ID or Group ID to add"),
         role_ids: z.array(z.number()).describe("Role IDs to assign (use list_roles to get IDs)"),
       },

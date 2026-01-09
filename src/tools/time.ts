@@ -12,7 +12,7 @@ export function registerTimeTools(
     {
       description: "List time entries with optional filters",
       inputSchema: {
-        project_id: z.union([z.string(), z.number()]).optional().describe("Filter by project ID or identifier"),
+        project_id: z.string().optional().describe("Filter by project identifier"),
         user_id: z.union([z.number(), z.string()]).optional().describe("Filter by user ID or 'me'"),
         spent_on: z.string().optional().describe("Filter by exact date (YYYY-MM-DD)"),
         from: z.string().optional().describe("Filter from date (YYYY-MM-DD)"),
@@ -61,7 +61,7 @@ export function registerTimeTools(
       description: "Log time on an issue or project",
       inputSchema: {
         issue_id: z.number().optional().describe("Issue ID to log time on (either issue_id or project_id required)"),
-        project_id: z.union([z.string(), z.number()]).optional().describe("Project ID to log time on (either issue_id or project_id required)"),
+        project_id: z.string().optional().describe("Project identifier to log time on (either issue_id or project_id required)"),
         hours: z.number().describe("Number of hours spent"),
         activity_id: z.number().optional().describe("Activity ID (use list_time_entry_activities to get IDs)"),
         spent_on: z.string().optional().describe("Date spent (YYYY-MM-DD, defaults to today)"),
