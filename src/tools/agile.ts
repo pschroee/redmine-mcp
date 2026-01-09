@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import type { RedmineClient } from "../redmine/client.js";
+import { formatSprint, formatSprintList, formatAgileData } from "../formatters/index.js";
 
 export function registerAgileTools(
   server: McpServer,
@@ -18,8 +19,13 @@ export function registerAgileTools(
     },
     async (params) => {
       const result = await client.listAgileSprints(params.project_id);
+      if ("error" in result) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
       return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        content: [{ type: "text", text: formatSprintList(result) }],
       };
     }
   );
@@ -35,8 +41,13 @@ export function registerAgileTools(
     },
     async (params) => {
       const result = await client.getAgileSprint(params.project_id, params.sprint_id);
+      if ("error" in result) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
       return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        content: [{ type: "text", text: formatSprint(result) }],
       };
     }
   );
@@ -117,8 +128,13 @@ export function registerAgileTools(
     },
     async (params) => {
       const result = await client.getIssueAgileData(params.issue_id);
+      if ("error" in result) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
       return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        content: [{ type: "text", text: formatAgileData(result) }],
       };
     }
   );

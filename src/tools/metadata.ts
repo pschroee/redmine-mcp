@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import type { RedmineClient } from "../redmine/client.js";
-import { formatTrackerList, formatStatusList, formatCategoryList } from "../formatters/index.js";
+import { formatTrackerList, formatStatusList, formatCategoryList, formatCategory, formatCustomFieldList, formatQueryList } from "../formatters/index.js";
 
 export function registerMetadataTools(
   server: McpServer,
@@ -80,8 +80,13 @@ export function registerMetadataTools(
     },
     async (params) => {
       const result = await client.getIssueCategory(params.category_id);
+      if ("error" in result) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
       return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        content: [{ type: "text", text: formatCategory(result) }],
       };
     }
   );
@@ -150,8 +155,13 @@ export function registerMetadataTools(
     },
     async () => {
       const result = await client.listCustomFields();
+      if ("error" in result) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
       return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        content: [{ type: "text", text: formatCustomFieldList(result) }],
       };
     }
   );
@@ -165,8 +175,13 @@ export function registerMetadataTools(
     },
     async () => {
       const result = await client.listQueries();
+      if ("error" in result) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
       return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        content: [{ type: "text", text: formatQueryList(result) }],
       };
     }
   );

@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import type { RedmineClient } from "../redmine/client.js";
-import { formatVersion, formatVersionList } from "../formatters/index.js";
+import { formatVersion, formatVersionList, formatRelation, formatRelationList } from "../formatters/index.js";
 
 export function registerRelationsTools(
   server: McpServer,
@@ -19,8 +19,13 @@ export function registerRelationsTools(
     },
     async (params) => {
       const result = await client.listIssueRelations(params.issue_id);
+      if ("error" in result) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
       return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        content: [{ type: "text", text: formatRelationList(result) }],
       };
     }
   );
@@ -35,8 +40,13 @@ export function registerRelationsTools(
     },
     async (params) => {
       const result = await client.getRelation(params.relation_id);
+      if ("error" in result) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
       return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        content: [{ type: "text", text: formatRelation(result) }],
       };
     }
   );

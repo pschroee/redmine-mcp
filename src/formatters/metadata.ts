@@ -62,6 +62,41 @@ interface RedmineRolesResponse {
   roles: RedmineRole[];
 }
 
+interface RedmineCustomField {
+  id: number;
+  name: string;
+  customized_type: string;
+  field_format: string;
+  is_required: boolean;
+  is_filter: boolean;
+  searchable: boolean;
+}
+
+interface RedmineCustomFieldsResponse {
+  custom_fields: RedmineCustomField[];
+}
+
+interface RedmineQuery {
+  id: number;
+  name: string;
+  is_public: boolean;
+  project_id?: number;
+}
+
+interface RedmineQueriesResponse {
+  queries: RedmineQuery[];
+}
+
+interface RedmineDocumentCategory {
+  id: number;
+  name: string;
+  is_default: boolean;
+}
+
+interface RedmineDocumentCategoriesResponse {
+  document_categories: RedmineDocumentCategory[];
+}
+
 /**
  * Format a list of trackers as a Markdown table
  */
@@ -238,4 +273,98 @@ export function formatRole(response: { role: RedmineRole }): string {
   }
 
   return lines.join("\n").trimEnd();
+}
+
+/**
+ * Format a single issue category as Markdown
+ */
+export function formatCategory(response: { issue_category: RedmineCategory }): string {
+  const cat = response.issue_category;
+  const lines: string[] = [];
+
+  lines.push(`# ${cat.name}`);
+  lines.push("");
+  lines.push("| Field | Value |");
+  lines.push("|-------|-------|");
+  lines.push(`| ID | ${cat.id} |`);
+  if (cat.project) {
+    lines.push(`| Project | ${cat.project.name} |`);
+  }
+  if (cat.assigned_to) {
+    lines.push(`| Default Assignee | ${cat.assigned_to.name} |`);
+  }
+
+  return lines.join("\n");
+}
+
+/**
+ * Format a list of custom fields as a Markdown table
+ */
+export function formatCustomFieldList(response: RedmineCustomFieldsResponse): string {
+  const fields = response.custom_fields;
+
+  if (fields.length === 0) {
+    return "No custom fields found.";
+  }
+
+  const lines: string[] = [];
+  lines.push(`# Custom Fields (${fields.length})`);
+  lines.push("");
+  lines.push("| ID | Name | Type | Format | Required |");
+  lines.push("|----|------|------|--------|----------|");
+
+  for (const field of fields) {
+    const required = field.is_required ? "Yes" : "No";
+    lines.push(`| ${field.id} | ${field.name} | ${field.customized_type} | ${field.field_format} | ${required} |`);
+  }
+
+  return lines.join("\n");
+}
+
+/**
+ * Format a list of saved queries as a Markdown table
+ */
+export function formatQueryList(response: RedmineQueriesResponse): string {
+  const queries = response.queries;
+
+  if (queries.length === 0) {
+    return "No queries found.";
+  }
+
+  const lines: string[] = [];
+  lines.push(`# Saved Queries (${queries.length})`);
+  lines.push("");
+  lines.push("| ID | Name | Visibility |");
+  lines.push("|----|------|------------|");
+
+  for (const query of queries) {
+    const visibility = query.is_public ? "Public" : "Private";
+    lines.push(`| ${query.id} | ${query.name} | ${visibility} |`);
+  }
+
+  return lines.join("\n");
+}
+
+/**
+ * Format a list of document categories as a Markdown table
+ */
+export function formatDocumentCategoryList(response: RedmineDocumentCategoriesResponse): string {
+  const categories = response.document_categories;
+
+  if (categories.length === 0) {
+    return "No document categories found.";
+  }
+
+  const lines: string[] = [];
+  lines.push(`# Document Categories (${categories.length})`);
+  lines.push("");
+  lines.push("| ID | Name | Default |");
+  lines.push("|----|------|---------|");
+
+  for (const cat of categories) {
+    const isDefault = cat.is_default ? "Yes" : "No";
+    lines.push(`| ${cat.id} | ${cat.name} | ${isDefault} |`);
+  }
+
+  return lines.join("\n");
 }

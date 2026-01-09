@@ -7,6 +7,10 @@ import {
   formatActivityList,
   formatRoleList,
   formatRole,
+  formatCategory,
+  formatCustomFieldList,
+  formatQueryList,
+  formatDocumentCategoryList,
 } from "../../src/formatters/metadata.js";
 
 // === TRACKER TESTS ===
@@ -390,5 +394,335 @@ describe("formatRole", () => {
     expect(result).toContain("- manage_members");
     expect(result).toContain("- delete_issues");
     expect(result).toContain("- manage_issue_relations");
+  });
+});
+
+// === CATEGORY (SINGLE) TESTS ===
+
+describe("formatCategory", () => {
+  test("formats basic category", () => {
+    const response = {
+      issue_category: { id: 1, name: "Backend" },
+    };
+    const result = formatCategory(response);
+
+    expect(result).toContain("# Backend");
+    expect(result).toContain("| Field | Value |");
+    expect(result).toContain("| ID | 1 |");
+  });
+
+  test("formats category with project", () => {
+    const response = {
+      issue_category: {
+        id: 2,
+        name: "Frontend",
+        project: { id: 5, name: "Web App" },
+      },
+    };
+    const result = formatCategory(response);
+
+    expect(result).toContain("# Frontend");
+    expect(result).toContain("| ID | 2 |");
+    expect(result).toContain("| Project | Web App |");
+  });
+
+  test("formats category with assigned_to", () => {
+    const response = {
+      issue_category: {
+        id: 3,
+        name: "Database",
+        assigned_to: { id: 10, name: "Jane Smith" },
+      },
+    };
+    const result = formatCategory(response);
+
+    expect(result).toContain("# Database");
+    expect(result).toContain("| ID | 3 |");
+    expect(result).toContain("| Default Assignee | Jane Smith |");
+  });
+
+  test("formats category with project and assigned_to", () => {
+    const response = {
+      issue_category: {
+        id: 4,
+        name: "API",
+        project: { id: 5, name: "Web App" },
+        assigned_to: { id: 11, name: "John Doe" },
+      },
+    };
+    const result = formatCategory(response);
+
+    expect(result).toContain("# API");
+    expect(result).toContain("| ID | 4 |");
+    expect(result).toContain("| Project | Web App |");
+    expect(result).toContain("| Default Assignee | John Doe |");
+  });
+});
+
+// === CUSTOM FIELDS TESTS ===
+
+describe("formatCustomFieldList", () => {
+  test("formats empty custom field list", () => {
+    const response = { custom_fields: [] };
+    const result = formatCustomFieldList(response);
+
+    expect(result).toBe("No custom fields found.");
+  });
+
+  test("formats single custom field", () => {
+    const response = {
+      custom_fields: [
+        {
+          id: 1,
+          name: "Sprint",
+          customized_type: "issue",
+          field_format: "string",
+          is_required: false,
+          is_filter: true,
+          searchable: true,
+        },
+      ],
+    };
+    const result = formatCustomFieldList(response);
+
+    expect(result).toContain("# Custom Fields (1)");
+    expect(result).toContain("| ID | Name | Type | Format | Required |");
+    expect(result).toContain("| 1 | Sprint | issue | string | No |");
+  });
+
+  test("formats required custom field", () => {
+    const response = {
+      custom_fields: [
+        {
+          id: 2,
+          name: "Priority Level",
+          customized_type: "issue",
+          field_format: "list",
+          is_required: true,
+          is_filter: true,
+          searchable: true,
+        },
+      ],
+    };
+    const result = formatCustomFieldList(response);
+
+    expect(result).toContain("| 2 | Priority Level | issue | list | Yes |");
+  });
+
+  test("formats multiple custom fields", () => {
+    const response = {
+      custom_fields: [
+        {
+          id: 1,
+          name: "External ID",
+          customized_type: "issue",
+          field_format: "string",
+          is_required: false,
+          is_filter: true,
+          searchable: true,
+        },
+        {
+          id: 2,
+          name: "Company",
+          customized_type: "project",
+          field_format: "string",
+          is_required: true,
+          is_filter: false,
+          searchable: false,
+        },
+        {
+          id: 3,
+          name: "Phone",
+          customized_type: "user",
+          field_format: "string",
+          is_required: false,
+          is_filter: false,
+          searchable: true,
+        },
+      ],
+    };
+    const result = formatCustomFieldList(response);
+
+    expect(result).toContain("# Custom Fields (3)");
+    expect(result).toContain("| 1 | External ID | issue | string | No |");
+    expect(result).toContain("| 2 | Company | project | string | Yes |");
+    expect(result).toContain("| 3 | Phone | user | string | No |");
+  });
+
+  test("formats custom fields with different formats", () => {
+    const response = {
+      custom_fields: [
+        {
+          id: 1,
+          name: "Date Field",
+          customized_type: "issue",
+          field_format: "date",
+          is_required: false,
+          is_filter: true,
+          searchable: true,
+        },
+        {
+          id: 2,
+          name: "Boolean Field",
+          customized_type: "issue",
+          field_format: "bool",
+          is_required: false,
+          is_filter: true,
+          searchable: false,
+        },
+        {
+          id: 3,
+          name: "Link Field",
+          customized_type: "issue",
+          field_format: "link",
+          is_required: false,
+          is_filter: false,
+          searchable: false,
+        },
+      ],
+    };
+    const result = formatCustomFieldList(response);
+
+    expect(result).toContain("| 1 | Date Field | issue | date | No |");
+    expect(result).toContain("| 2 | Boolean Field | issue | bool | No |");
+    expect(result).toContain("| 3 | Link Field | issue | link | No |");
+  });
+});
+
+// === QUERIES TESTS ===
+
+describe("formatQueryList", () => {
+  test("formats empty query list", () => {
+    const response = { queries: [] };
+    const result = formatQueryList(response);
+
+    expect(result).toBe("No queries found.");
+  });
+
+  test("formats single public query", () => {
+    const response = {
+      queries: [
+        {
+          id: 1,
+          name: "Open Issues",
+          is_public: true,
+        },
+      ],
+    };
+    const result = formatQueryList(response);
+
+    expect(result).toContain("# Saved Queries (1)");
+    expect(result).toContain("| ID | Name | Visibility |");
+    expect(result).toContain("| 1 | Open Issues | Public |");
+  });
+
+  test("formats single private query", () => {
+    const response = {
+      queries: [
+        {
+          id: 2,
+          name: "My Tasks",
+          is_public: false,
+        },
+      ],
+    };
+    const result = formatQueryList(response);
+
+    expect(result).toContain("| 2 | My Tasks | Private |");
+  });
+
+  test("formats query with project_id", () => {
+    const response = {
+      queries: [
+        {
+          id: 3,
+          name: "Project Bugs",
+          is_public: true,
+          project_id: 5,
+        },
+      ],
+    };
+    const result = formatQueryList(response);
+
+    expect(result).toContain("| 3 | Project Bugs | Public |");
+  });
+
+  test("formats multiple queries", () => {
+    const response = {
+      queries: [
+        { id: 1, name: "All Open Issues", is_public: true },
+        { id: 2, name: "Assigned to Me", is_public: false },
+        { id: 3, name: "High Priority", is_public: true },
+        { id: 4, name: "Due This Week", is_public: false, project_id: 1 },
+      ],
+    };
+    const result = formatQueryList(response);
+
+    expect(result).toContain("# Saved Queries (4)");
+    expect(result).toContain("| 1 | All Open Issues | Public |");
+    expect(result).toContain("| 2 | Assigned to Me | Private |");
+    expect(result).toContain("| 3 | High Priority | Public |");
+    expect(result).toContain("| 4 | Due This Week | Private |");
+  });
+});
+
+// === DOCUMENT CATEGORIES TESTS ===
+
+describe("formatDocumentCategoryList", () => {
+  test("formats empty document category list", () => {
+    const response = { document_categories: [] };
+    const result = formatDocumentCategoryList(response);
+
+    expect(result).toBe("No document categories found.");
+  });
+
+  test("formats single document category", () => {
+    const response = {
+      document_categories: [
+        {
+          id: 1,
+          name: "User Documentation",
+          is_default: false,
+        },
+      ],
+    };
+    const result = formatDocumentCategoryList(response);
+
+    expect(result).toContain("# Document Categories (1)");
+    expect(result).toContain("| ID | Name | Default |");
+    expect(result).toContain("| 1 | User Documentation | No |");
+  });
+
+  test("formats default document category", () => {
+    const response = {
+      document_categories: [
+        {
+          id: 2,
+          name: "Technical Documentation",
+          is_default: true,
+        },
+      ],
+    };
+    const result = formatDocumentCategoryList(response);
+
+    expect(result).toContain("| 2 | Technical Documentation | Yes |");
+  });
+
+  test("formats multiple document categories", () => {
+    const response = {
+      document_categories: [
+        { id: 1, name: "User Documentation", is_default: false },
+        { id: 2, name: "Technical Documentation", is_default: true },
+        { id: 3, name: "API Documentation", is_default: false },
+        { id: 4, name: "Release Notes", is_default: false },
+      ],
+    };
+    const result = formatDocumentCategoryList(response);
+
+    expect(result).toContain("# Document Categories (4)");
+    expect(result).toContain("| 1 | User Documentation | No |");
+    expect(result).toContain("| 2 | Technical Documentation | Yes |");
+    expect(result).toContain("| 3 | API Documentation | No |");
+    expect(result).toContain("| 4 | Release Notes | No |");
   });
 });

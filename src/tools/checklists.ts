@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import type { RedmineClient } from "../redmine/client.js";
+import { formatChecklist, formatChecklistList } from "../formatters/index.js";
 
 export function registerChecklistsTools(
   server: McpServer,
@@ -16,8 +17,13 @@ export function registerChecklistsTools(
     },
     async (params) => {
       const result = await client.listChecklists(params.issue_id);
+      if ("error" in result) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
       return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        content: [{ type: "text", text: formatChecklistList(result) }],
       };
     }
   );
@@ -32,8 +38,13 @@ export function registerChecklistsTools(
     },
     async (params) => {
       const result = await client.getChecklist(params.checklist_id);
+      if ("error" in result) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
       return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        content: [{ type: "text", text: formatChecklist(result) }],
       };
     }
   );
