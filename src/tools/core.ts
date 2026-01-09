@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import type { RedmineClient } from "../redmine/client.js";
+import { formatIssueResponse } from "../formatters/index.js";
 
 export function registerCoreTools(
   server: McpServer,
@@ -42,7 +43,7 @@ export function registerCoreTools(
   server.registerTool(
     "get_issue",
     {
-      description: "Get details of a specific issue by ID",
+      description: "Get details of a specific issue by ID. Returns Markdown-formatted response.",
       inputSchema: {
         issue_id: z.number().describe("The issue ID"),
         include: z.string().optional().describe("Include: attachments, relations, journals, watchers, children, changesets, allowed_statuses"),
@@ -50,8 +51,17 @@ export function registerCoreTools(
     },
     async (params) => {
       const result = await client.getIssue(params.issue_id, params.include);
+
+      // Check if this is an error response
+      if ("error" in result) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
+
+      // Format response as Markdown
       return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        content: [{ type: "text", text: formatIssueResponse(result) }],
       };
     }
   );
