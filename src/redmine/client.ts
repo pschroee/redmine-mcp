@@ -113,6 +113,7 @@ export class RedmineClient {
     include?: string;
     limit?: number;
     offset?: number;
+    query_id?: number;
   }): Promise<RedmineResult<RedmineIssuesResponse>> {
     const query = new URLSearchParams();
     if (params?.project_id) query.set("project_id", String(params.project_id));
@@ -131,6 +132,7 @@ export class RedmineClient {
     if (params?.include) query.set("include", params.include);
     if (params?.limit) query.set("limit", String(params.limit));
     if (params?.offset) query.set("offset", String(params.offset));
+    if (params?.query_id) query.set("query_id", String(params.query_id));
 
     const queryString = query.toString();
     const path = `/issues.json${queryString ? `?${queryString}` : ""}`;
