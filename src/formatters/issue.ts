@@ -184,8 +184,15 @@ export function formatIssueList(response: RedmineIssuesResponse): string {
   const customFieldIds = Array.from(customFieldMap.keys()).sort((a, b) => a - b);
   const customFieldNames = customFieldIds.map(id => customFieldMap.get(id)!);
 
+  // Check if any issue has tags
+  const hasTags = issues.some(issue => issue.tags && issue.tags.length > 0);
+
   // Table header
-  const headerCols = ["ID", "Subject", "Status", "Priority", "Assigned", "Version", "Created", "Updated", ...customFieldNames];
+  const headerCols = ["ID", "Subject", "Status", "Priority", "Assigned", "Version", "Created", "Updated"];
+  if (hasTags) {
+    headerCols.push("Tags");
+  }
+  headerCols.push(...customFieldNames);
   lines.push("| " + headerCols.join(" | ") + " |");
   lines.push("|" + headerCols.map(() => "---").join("|") + "|");
 
@@ -199,6 +206,7 @@ export function formatIssueList(response: RedmineIssuesResponse): string {
     const version = issue.fixed_version?.name ?? "";
     const created = formatDateShort(issue.created_on);
     const updated = formatDateShort(issue.updated_on);
+    const tags = issue.tags?.map(t => t.name).join(", ") ?? "";
 
     // Build custom field values in order
     const cfValues: string[] = [];
@@ -212,7 +220,11 @@ export function formatIssueList(response: RedmineIssuesResponse): string {
       }
     }
 
-    const cols = [id, subject, status, priority, assigned, version, created, updated, ...cfValues];
+    const cols = [id, subject, status, priority, assigned, version, created, updated];
+    if (hasTags) {
+      cols.push(tags);
+    }
+    cols.push(...cfValues);
     lines.push("| " + cols.join(" | ") + " |");
   }
 

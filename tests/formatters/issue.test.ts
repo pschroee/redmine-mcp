@@ -241,4 +241,54 @@ describe("formatIssueList", () => {
     expect(result).toContain("| ID | Subject | Status | Priority | Assigned | Version | Created | Updated |");
     expect(result).not.toContain("| ID | Subject | Status | Priority | Assigned | Version | Created | Updated | ");
   });
+
+  it("should show tags column when issues have tags", () => {
+    const response: RedmineIssuesResponse = {
+      issues: [
+        createMockIssue({
+          id: 1,
+          subject: "Issue with tags",
+          updated_on: "2024-01-20T10:00:00Z",
+          tags: [
+            { id: 1, name: "frontend" },
+            { id: 2, name: "urgent" },
+          ],
+        }),
+        createMockIssue({
+          id: 2,
+          subject: "Issue without tags",
+          updated_on: "2024-01-21T10:00:00Z",
+        }),
+      ],
+      total_count: 2,
+      offset: 0,
+      limit: 25,
+    };
+
+    const result = formatIssueList(response);
+
+    expect(result).toContain("| Tags |");
+    expect(result).toContain("frontend, urgent");
+    // Issue without tags should have empty tags cell
+    expect(result).toContain("| #2 | Issue without tags |");
+  });
+
+  it("should not show tags column when no issues have tags", () => {
+    const response: RedmineIssuesResponse = {
+      issues: [
+        createMockIssue({
+          id: 1,
+          subject: "Issue without tags",
+          updated_on: "2024-01-20T10:00:00Z",
+        }),
+      ],
+      total_count: 1,
+      offset: 0,
+      limit: 25,
+    };
+
+    const result = formatIssueList(response);
+
+    expect(result).not.toContain("| Tags |");
+  });
 });

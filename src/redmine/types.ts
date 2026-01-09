@@ -225,6 +225,7 @@ export interface RedmineIssue {
   total_estimated_hours?: number;
   total_spent_hours?: number;
   custom_fields?: RedmineCustomFieldValue[];
+  tags?: { id: number; name: string }[]; // From redmine_tags plugin
   created_on: string;
   updated_on: string;
   closed_on?: string;
