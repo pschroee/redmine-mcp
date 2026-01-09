@@ -31,6 +31,7 @@ export function registerCoreTools(
         offset: z.number().optional().describe("Skip first N results"),
         query_id: z.number().optional().describe("Use a saved query ID to filter issues (get IDs from list_queries). For project-specific queries, project_id is automatically fetched from the query if not provided."),
         tags: z.string().optional().describe("Filter by tags (comma-separated tag names, requires redmine_tags plugin)"),
+        fetch_tags: z.boolean().optional().default(true).describe("Fetch tags for each issue via individual API calls (slower but shows Tags column, requires redmine_tags plugin)"),
       },
     },
     async (params) => {
@@ -40,6 +41,21 @@ export function registerCoreTools(
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
       }
+
+      // Fetch tags for each issue if requested
+      if (params.fetch_tags && result.issues.length > 0) {
+        const enrichedIssues = await Promise.all(
+          result.issues.map(async (issue) => {
+            const detailResult = await client.getIssue(issue.id);
+            if (!("error" in detailResult) && detailResult.issue.tags) {
+              return { ...issue, tags: detailResult.issue.tags };
+            }
+            return issue;
+          })
+        );
+        result.issues = enrichedIssues;
+      }
+
       return {
         content: [{ type: "text", text: formatIssueList(result) }],
       };
