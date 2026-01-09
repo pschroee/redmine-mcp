@@ -1,7 +1,6 @@
 import type {
   RedmineAgileSprint,
   RedmineAgileSprintsResponse,
-  RedmineAgileData,
   RedmineAgileDataResponse,
 } from "../redmine/types.js";
 
