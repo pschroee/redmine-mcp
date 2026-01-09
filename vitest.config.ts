@@ -54,6 +54,7 @@ export default defineConfig({
       "tests/10-roles.test.ts",
       "tests/11-admin.test.ts",
       "tests/12-memberships.test.ts",
+      "tests/formatters/**/*.test.ts",
     ],
   },
 });

@@ -1,4 +1,4 @@
-import type { RedmineIssue } from "../redmine/types.js";
+import type { RedmineIssue, RedmineIssuesResponse } from "../redmine/types.js";
 import { formatJournals, type NameLookup } from "./journals.js";
 
 /**
@@ -140,4 +140,55 @@ export function formatIssue(issue: RedmineIssue, lookup: NameLookup = {}): strin
  */
 export function formatIssueResponse(response: { issue: RedmineIssue }, lookup: NameLookup = {}): string {
   return formatIssue(response.issue, lookup);
+}
+
+/**
+ * Format a date string to YYYY-MM-DD format
+ */
+function formatDateShort(isoDate: string): string {
+  return new Date(isoDate).toISOString().slice(0, 10);
+}
+
+/**
+ * Format a list of issues as a Markdown table
+ */
+export function formatIssueList(response: RedmineIssuesResponse): string {
+  const { issues, total_count, offset, limit } = response;
+  const lines: string[] = [];
+
+  // Header with count
+  lines.push(`# Issues (${issues.length} of ${total_count})`);
+  lines.push("");
+
+  // Pagination info if needed
+  if (offset > 0 || total_count > limit) {
+    const start = offset + 1;
+    const end = offset + issues.length;
+    lines.push(`_Showing ${start}-${end} of ${total_count}_`);
+    lines.push("");
+  }
+
+  // Empty case
+  if (issues.length === 0) {
+    lines.push("No issues found.");
+    return lines.join("\n");
+  }
+
+  // Table header
+  lines.push("| ID | Subject | Status | Priority | Assigned | Updated |");
+  lines.push("|---|---|---|---|---|---|");
+
+  // Table rows
+  for (const issue of issues) {
+    const id = `#${issue.id}`;
+    const subject = issue.subject;
+    const status = issue.status.name;
+    const priority = issue.priority.name;
+    const assigned = issue.assigned_to?.name ?? "_(unassigned)_";
+    const updated = formatDateShort(issue.updated_on);
+
+    lines.push(`| ${id} | ${subject} | ${status} | ${priority} | ${assigned} | ${updated} |`);
+  }
+
+  return lines.join("\n");
 }
