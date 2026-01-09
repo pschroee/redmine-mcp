@@ -50,7 +50,8 @@ export function registerChecklistsTools(
       },
     },
     async (params) => {
-      const result = await client.createChecklist(params);
+      const { issue_id, ...data } = params;
+      const result = await client.createChecklist(issue_id, data);
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
       };

@@ -868,15 +868,24 @@ export class RedmineClient {
     return this.request<{ checklist: RedmineChecklist }>("GET", `/checklists/${id}.json`);
   }
 
-  async createChecklist(data: {
-    issue_id: number;
-    subject: string;
-    is_done?: boolean;
-    position?: number;
-  }): Promise<RedmineResult<{ checklist: RedmineChecklist }>> {
-    return this.request<{ checklist: RedmineChecklist }>("POST", "/checklists.json", {
-      checklist: data,
-    });
+  async createChecklist(
+    issueId: number,
+    data: {
+      subject: string;
+      is_done?: boolean;
+      position?: number;
+    }
+  ): Promise<RedmineResult<{ checklist: RedmineChecklist }>> {
+    return this.request<{ checklist: RedmineChecklist }>(
+      "POST",
+      `/issues/${issueId}/checklists.json`,
+      {
+        checklist: {
+          ...data,
+          is_done: data.is_done ? 1 : 0,
+        },
+      }
+    );
   }
 
   async updateChecklist(
@@ -887,8 +896,12 @@ export class RedmineClient {
       position?: number;
     }
   ): Promise<RedmineResult<void>> {
+    const payload: Record<string, unknown> = { ...data };
+    if (data.is_done !== undefined) {
+      payload.is_done = data.is_done ? 1 : 0;
+    }
     return this.request<void>("PUT", `/checklists/${id}.json`, {
-      checklist: data,
+      checklist: payload,
     });
   }
 
