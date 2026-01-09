@@ -1,11 +1,16 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { RedmineClient } from "../redmine/client.js";
 import { registerAccountTools } from "./account.js";
+import { registerAdminTools } from "./admin.js";
 import { registerCoreTools } from "./core.js";
+import { registerEnumerationsTools } from "./enumerations.js";
 import { registerFilesTools } from "./files.js";
+import { registerMembershipsTools } from "./memberships.js";
 import { registerMetadataTools } from "./metadata.js";
 import { registerRelationsTools } from "./relations.js";
+import { registerRolesTools } from "./roles.js";
 import { registerSearchTools } from "./search.js";
+import { registerTimeTools } from "./time.js";
 import { registerWikiTools } from "./wiki.js";
 
 // Tool registration function type
@@ -19,6 +24,11 @@ export const toolGroups: Record<string, ToolRegistrationFn> = {
   relations: registerRelationsTools,
   search: registerSearchTools,
   account: registerAccountTools,
+  time: registerTimeTools,
+  enumerations: registerEnumerationsTools,
+  memberships: registerMembershipsTools,
+  roles: registerRolesTools,
+  admin: registerAdminTools,
 };
 
 export type ToolGroup = keyof typeof toolGroups;
