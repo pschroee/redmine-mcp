@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import type { RedmineClient } from "../redmine/client.js";
+import { formatTimeEntry, formatTimeEntryList } from "../formatters/index.js";
 
 export function registerTimeTools(
   server: McpServer,
@@ -22,8 +23,13 @@ export function registerTimeTools(
     },
     async (params) => {
       const result = await client.listTimeEntries(params);
+      if ("error" in result) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
       return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        content: [{ type: "text", text: formatTimeEntryList(result) }],
       };
     }
   );
@@ -38,8 +44,13 @@ export function registerTimeTools(
     },
     async (params) => {
       const result = await client.getTimeEntry(params.time_entry_id);
+      if ("error" in result) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
       return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        content: [{ type: "text", text: formatTimeEntry(result) }],
       };
     }
   );

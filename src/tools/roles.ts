@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import type { RedmineClient } from "../redmine/client.js";
+import { formatRoleList, formatRole } from "../formatters/index.js";
 
 export function registerRolesTools(
   server: McpServer,
@@ -13,8 +14,13 @@ export function registerRolesTools(
     },
     async () => {
       const result = await client.listRoles();
+      if ("error" in result) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
       return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        content: [{ type: "text", text: formatRoleList(result) }],
       };
     }
   );
@@ -29,8 +35,13 @@ export function registerRolesTools(
     },
     async (params) => {
       const result = await client.getRole(params.role_id);
+      if ("error" in result) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
       return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        content: [{ type: "text", text: formatRole(result) }],
       };
     }
   );

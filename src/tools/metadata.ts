@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import type { RedmineClient } from "../redmine/client.js";
+import { formatTrackerList, formatStatusList, formatCategoryList } from "../formatters/index.js";
 
 export function registerMetadataTools(
   server: McpServer,
@@ -15,8 +16,13 @@ export function registerMetadataTools(
     },
     async () => {
       const result = await client.listTrackers();
+      if ("error" in result) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
       return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        content: [{ type: "text", text: formatTrackerList(result) }],
       };
     }
   );
@@ -30,8 +36,13 @@ export function registerMetadataTools(
     },
     async () => {
       const result = await client.listIssueStatuses();
+      if ("error" in result) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
       return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        content: [{ type: "text", text: formatStatusList(result) }],
       };
     }
   );
@@ -48,8 +59,13 @@ export function registerMetadataTools(
     },
     async (params) => {
       const result = await client.listIssueCategories(params.project_id);
+      if ("error" in result) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
       return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        content: [{ type: "text", text: formatCategoryList(result) }],
       };
     }
   );

@@ -1,5 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { RedmineClient } from "../redmine/client.js";
+import { formatPriorityList, formatActivityList } from "../formatters/index.js";
 
 export function registerEnumerationsTools(
   server: McpServer,
@@ -12,8 +13,13 @@ export function registerEnumerationsTools(
     },
     async () => {
       const result = await client.listIssuePriorities();
+      if ("error" in result) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
       return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        content: [{ type: "text", text: formatPriorityList(result) }],
       };
     }
   );
@@ -25,8 +31,13 @@ export function registerEnumerationsTools(
     },
     async () => {
       const result = await client.listTimeEntryActivities();
+      if ("error" in result) {
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        };
+      }
       return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+        content: [{ type: "text", text: formatActivityList(result) }],
       };
     }
   );
