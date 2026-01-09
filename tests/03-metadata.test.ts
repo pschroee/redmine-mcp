@@ -44,11 +44,37 @@ describe("metadata", () => {
   });
 
   describe("list_queries", () => {
-    it("should list saved queries", async () => {
+    it("should list all saved queries", async () => {
       const result = await client.listQueries();
 
       expect(result.queries).toBeDefined();
       expect(Array.isArray(result.queries)).toBe(true);
+    });
+
+    it("should list queries filtered by project_id", async () => {
+      const result = await client.listQueries({ project_id: state.projectId });
+
+      // API should return queries array (may be empty for new projects)
+      if ("error" in result) {
+        // Some Redmine versions may not support project-scoped queries endpoint
+        console.log("Skipping project-filtered queries test: API returned error");
+        return;
+      }
+
+      expect(result.queries).toBeDefined();
+      expect(Array.isArray(result.queries)).toBe(true);
+      // All returned queries should either be global or belong to this project
+      for (const query of result.queries) {
+        if (query.project_id) {
+          expect(query.project_id).toBe(state.projectNumericId);
+        }
+      }
+    });
+
+    it("should return error for nonexistent project", async () => {
+      const result = await client.listQueries({ project_id: "nonexistent-xyz-999" }) as { error?: boolean; status?: number };
+      expect(result.error).toBe(true);
+      expect(result.status).toBe(404);
     });
   });
 

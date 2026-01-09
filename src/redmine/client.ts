@@ -580,7 +580,12 @@ export class RedmineClient {
 
   // ==================== QUERIES ====================
 
-  async listQueries(): Promise<RedmineResult<RedmineQueriesResponse>> {
+  async listQueries(params?: {
+    project_id?: string | number;
+  }): Promise<RedmineResult<RedmineQueriesResponse>> {
+    if (params?.project_id) {
+      return this.request<RedmineQueriesResponse>("GET", `/projects/${params.project_id}/queries.json`);
+    }
     return this.request<RedmineQueriesResponse>("GET", "/queries.json");
   }
 

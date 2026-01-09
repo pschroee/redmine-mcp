@@ -172,9 +172,12 @@ export function registerMetadataTools(
     "list_queries",
     {
       description: "List all saved issue queries (public and private)",
+      inputSchema: {
+        project_id: z.union([z.string(), z.number()]).optional().describe("Filter queries by project ID or identifier"),
+      },
     },
-    async () => {
-      const result = await client.listQueries();
+    async (params: { project_id?: string | number }) => {
+      const result = await client.listQueries(params.project_id ? { project_id: params.project_id } : undefined);
       if ("error" in result) {
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],

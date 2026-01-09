@@ -334,12 +334,13 @@ export function formatQueryList(response: RedmineQueriesResponse): string {
   const lines: string[] = [];
   lines.push(`# Saved Queries (${queries.length})`);
   lines.push("");
-  lines.push("| ID | Name | Visibility |");
-  lines.push("|----|------|------------|");
+  lines.push("| ID | Name | Project | Visibility |");
+  lines.push("|----|------|---------|------------|");
 
   for (const query of queries) {
     const visibility = query.is_public ? "Public" : "Private";
-    lines.push(`| ${query.id} | ${query.name} | ${visibility} |`);
+    const project = query.project_id ? `#${query.project_id}` : "Global";
+    lines.push(`| ${query.id} | ${query.name} | ${project} | ${visibility} |`);
   }
 
   return lines.join("\n");

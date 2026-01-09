@@ -612,8 +612,8 @@ describe("formatQueryList", () => {
     const result = formatQueryList(response);
 
     expect(result).toContain("# Saved Queries (1)");
-    expect(result).toContain("| ID | Name | Visibility |");
-    expect(result).toContain("| 1 | Open Issues | Public |");
+    expect(result).toContain("| ID | Name | Project | Visibility |");
+    expect(result).toContain("| 1 | Open Issues | Global | Public |");
   });
 
   test("formats single private query", () => {
@@ -628,7 +628,7 @@ describe("formatQueryList", () => {
     };
     const result = formatQueryList(response);
 
-    expect(result).toContain("| 2 | My Tasks | Private |");
+    expect(result).toContain("| 2 | My Tasks | Global | Private |");
   });
 
   test("formats query with project_id", () => {
@@ -644,7 +644,7 @@ describe("formatQueryList", () => {
     };
     const result = formatQueryList(response);
 
-    expect(result).toContain("| 3 | Project Bugs | Public |");
+    expect(result).toContain("| 3 | Project Bugs | #5 | Public |");
   });
 
   test("formats multiple queries", () => {
@@ -659,10 +659,10 @@ describe("formatQueryList", () => {
     const result = formatQueryList(response);
 
     expect(result).toContain("# Saved Queries (4)");
-    expect(result).toContain("| 1 | All Open Issues | Public |");
-    expect(result).toContain("| 2 | Assigned to Me | Private |");
-    expect(result).toContain("| 3 | High Priority | Public |");
-    expect(result).toContain("| 4 | Due This Week | Private |");
+    expect(result).toContain("| 1 | All Open Issues | Global | Public |");
+    expect(result).toContain("| 2 | Assigned to Me | Global | Private |");
+    expect(result).toContain("| 3 | High Priority | Global | Public |");
+    expect(result).toContain("| 4 | Due This Week | #1 | Private |");
   });
 });
 
