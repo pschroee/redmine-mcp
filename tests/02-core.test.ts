@@ -407,6 +407,64 @@ describe("Issues", () => {
       expect(result.issues).toBeDefined();
       expect(result.issues.length).toBeLessThanOrEqual(2);
     });
+
+    it("should return error for nonexistent query_id", async () => {
+      const result = (await client.listIssues({
+        query_id: 999999999,
+      })) as { error?: boolean; status?: number; message?: string };
+      expect(result.error).toBe(true);
+      expect(result.status).toBe(404);
+      expect(result.message).toContain("Query with ID 999999999 not found");
+    });
+
+    it("should auto-fetch project_id from project-specific query", async () => {
+      // First, get list of queries to find a project-specific one
+      const queriesResult = await client.listQueries();
+      if ("error" in queriesResult) {
+        // If we can't list queries, skip this test
+        console.log("Skipping query_id auto-fetch test: cannot list queries");
+        return;
+      }
+
+      const projectQuery = queriesResult.queries.find(q => q.project_id !== null && q.project_id !== undefined);
+      if (!projectQuery) {
+        // No project-specific queries exist, skip test
+        console.log("Skipping query_id auto-fetch test: no project-specific queries found");
+        return;
+      }
+
+      // Call listIssues with only query_id (no project_id)
+      // The client should auto-fetch project_id from the query
+      const result = await client.listIssues({
+        query_id: projectQuery.id,
+      });
+
+      // Should succeed (not return 404 error that would happen without auto-fetch)
+      expect("error" in result && result.error).not.toBe(true);
+      expect(result.issues).toBeDefined();
+      expect(Array.isArray(result.issues)).toBe(true);
+    });
+
+    it("should work with global query (no project_id needed)", async () => {
+      const queriesResult = await client.listQueries();
+      if ("error" in queriesResult) {
+        console.log("Skipping global query test: cannot list queries");
+        return;
+      }
+
+      const globalQuery = queriesResult.queries.find(q => q.project_id === null || q.project_id === undefined);
+      if (!globalQuery) {
+        console.log("Skipping global query test: no global queries found");
+        return;
+      }
+
+      const result = await client.listIssues({
+        query_id: globalQuery.id,
+      });
+
+      expect("error" in result && result.error).not.toBe(true);
+      expect(result.issues).toBeDefined();
+    });
   });
 
   describe("update issue", () => {

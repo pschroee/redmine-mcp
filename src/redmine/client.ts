@@ -115,8 +115,30 @@ export class RedmineClient {
     offset?: number;
     query_id?: number;
   }): Promise<RedmineResult<RedmineIssuesResponse>> {
+    let projectId = params?.project_id;
+
+    // Auto-fetch project_id from query if query_id is provided without project_id
+    if (params?.query_id && !projectId) {
+      const queriesResult = await this.listQueries();
+      if ("error" in queriesResult) {
+        return queriesResult;
+      }
+      const savedQuery = queriesResult.queries.find(q => q.id === params.query_id);
+      if (!savedQuery) {
+        return {
+          error: true,
+          status: 404,
+          message: `Query with ID ${params.query_id} not found`,
+        };
+      }
+      // Use the query's project_id if it has one (project-specific query)
+      if (savedQuery.project_id) {
+        projectId = savedQuery.project_id;
+      }
+    }
+
     const query = new URLSearchParams();
-    if (params?.project_id) query.set("project_id", String(params.project_id));
+    if (projectId) query.set("project_id", String(projectId));
     if (params?.subproject_id) query.set("subproject_id", params.subproject_id);
     if (params?.tracker_id) query.set("tracker_id", String(params.tracker_id));
     if (params?.status_id) query.set("status_id", String(params.status_id));

@@ -28,7 +28,7 @@ export function registerCoreTools(
         include: z.string().optional().describe("Include associated data: attachments, relations, journals, watchers, children"),
         limit: z.number().optional().describe("Maximum results (default 25, max 100)"),
         offset: z.number().optional().describe("Skip first N results"),
-        query_id: z.number().optional().describe("Use a saved query ID to filter issues (get IDs from list_queries)"),
+        query_id: z.number().optional().describe("Use a saved query ID to filter issues (get IDs from list_queries). For project-specific queries, project_id is automatically fetched from the query if not provided."),
       },
     },
     async (params) => {
