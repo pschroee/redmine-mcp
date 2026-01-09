@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import type { RedmineClient } from "../redmine/client.js";
-import { formatIssueResponse } from "../formatters/index.js";
+import { formatIssueResponse, type NameLookup } from "../formatters/index.js";
 
 export function registerCoreTools(
   server: McpServer,
@@ -50,7 +50,13 @@ export function registerCoreTools(
       },
     },
     async (params) => {
-      const result = await client.getIssue(params.issue_id, params.include);
+      // Fetch issue and enumerations in parallel
+      const [result, statusesResult, trackersResult, prioritiesResult] = await Promise.all([
+        client.getIssue(params.issue_id, params.include),
+        client.listIssueStatuses(),
+        client.listTrackers(),
+        client.listIssuePriorities(),
+      ]);
 
       // Check if this is an error response
       if ("error" in result) {
@@ -59,9 +65,34 @@ export function registerCoreTools(
         };
       }
 
+      // Build lookup map for ID -> name resolution
+      const lookup: NameLookup = {
+        status_id: {},
+        tracker_id: {},
+        priority_id: {},
+      };
+
+      if (!("error" in statusesResult)) {
+        for (const s of statusesResult.issue_statuses) {
+          lookup.status_id[String(s.id)] = s.name;
+        }
+      }
+
+      if (!("error" in trackersResult)) {
+        for (const t of trackersResult.trackers) {
+          lookup.tracker_id[String(t.id)] = t.name;
+        }
+      }
+
+      if (!("error" in prioritiesResult)) {
+        for (const p of prioritiesResult.issue_priorities) {
+          lookup.priority_id[String(p.id)] = p.name;
+        }
+      }
+
       // Format response as Markdown
       return {
-        content: [{ type: "text", text: formatIssueResponse(result) }],
+        content: [{ type: "text", text: formatIssueResponse(result, lookup) }],
       };
     }
   );

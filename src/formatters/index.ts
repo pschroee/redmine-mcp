@@ -1,2 +1,2 @@
-export { formatJournals } from "./journals.js";
+export { formatJournals, type NameLookup } from "./journals.js";
 export { formatIssue, formatIssueResponse } from "./issue.js";

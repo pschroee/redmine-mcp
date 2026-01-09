@@ -2,9 +2,29 @@ import { diffLines } from "diff";
 import type { RedmineJournal } from "../redmine/types.js";
 
 /**
+ * Lookup map for resolving IDs to names
+ * Key: field name (e.g., "status_id"), Value: map of ID -> name
+ */
+export type NameLookup = Record<string, Record<string, string>>;
+
+/**
  * Fields that contain large text and should use diff formatting
  */
 const LARGE_TEXT_FIELDS = ["description"];
+
+/**
+ * Field name mappings for display (remove _id suffix)
+ */
+const FIELD_DISPLAY_NAMES: Record<string, string> = {
+  status_id: "status",
+  tracker_id: "tracker",
+  priority_id: "priority",
+  assigned_to_id: "assigned_to",
+  category_id: "category",
+  fixed_version_id: "version",
+  parent_id: "parent",
+  project_id: "project",
+};
 
 /**
  * Format a date string to a readable format
@@ -42,9 +62,28 @@ function generateDiff(oldValue: string, newValue: string): string {
 }
 
 /**
+ * Resolve an ID value to a display string with name
+ */
+function resolveValue(fieldName: string, value: string | undefined, lookup: NameLookup): string {
+  if (!value) return "_(empty)_";
+
+  const fieldLookup = lookup[fieldName];
+  if (fieldLookup && fieldLookup[value]) {
+    return `${fieldLookup[value]} (${value})`;
+  }
+
+  // For parent_id, show as issue reference
+  if (fieldName === "parent_id") {
+    return `#${value}`;
+  }
+
+  return value;
+}
+
+/**
  * Format a single journal detail (field change)
  */
-function formatDetail(detail: { property: string; name: string; old_value?: string; new_value?: string }): string {
+function formatDetail(detail: { property: string; name: string; old_value?: string; new_value?: string }, lookup: NameLookup): string {
   const { property, name, old_value, new_value } = detail;
 
   // Handle attachment additions/removals
@@ -87,10 +126,20 @@ function formatDetail(detail: { property: string; name: string; old_value?: stri
       return `- ${name}:\n\`\`\`diff\n${diff}\n\`\`\``;
     }
 
+    // Get display name for the field
+    const displayName = FIELD_DISPLAY_NAMES[name] || name;
+
+    // Resolve ID fields to names
+    if (name.endsWith("_id") && lookup[name]) {
+      const oldDisplay = resolveValue(name, old_value, lookup);
+      const newDisplay = resolveValue(name, new_value, lookup);
+      return `- ${displayName}: ${oldDisplay} → ${newDisplay}`;
+    }
+
     // Simple field changes
     const oldDisplay = old_value || "_(empty)_";
     const newDisplay = new_value || "_(empty)_";
-    return `- ${name}: ${oldDisplay} → ${newDisplay}`;
+    return `- ${displayName}: ${oldDisplay} → ${newDisplay}`;
   }
 
   // Fallback for unknown property types
@@ -100,7 +149,7 @@ function formatDetail(detail: { property: string; name: string; old_value?: stri
 /**
  * Format a single journal entry as Markdown
  */
-function formatJournalEntry(journal: RedmineJournal): string {
+function formatJournalEntry(journal: RedmineJournal, lookup: NameLookup): string {
   const lines: string[] = [];
 
   // Header with date and user
@@ -120,7 +169,7 @@ function formatJournalEntry(journal: RedmineJournal): string {
   if (journal.details && journal.details.length > 0) {
     lines.push("**Changes:**");
     for (const detail of journal.details) {
-      lines.push(formatDetail(detail));
+      lines.push(formatDetail(detail, lookup));
     }
     lines.push("");
   }
@@ -131,13 +180,13 @@ function formatJournalEntry(journal: RedmineJournal): string {
 /**
  * Format an array of journal entries as Markdown
  */
-export function formatJournals(journals: RedmineJournal[]): string {
+export function formatJournals(journals: RedmineJournal[], lookup: NameLookup = {}): string {
   if (!journals || journals.length === 0) {
     return "";
   }
 
   const header = `## History (${journals.length} entries)\n\n`;
-  const entries = journals.map(formatJournalEntry).join("\n---\n\n");
+  const entries = journals.map(j => formatJournalEntry(j, lookup)).join("\n---\n\n");
 
   return header + entries;
 }
