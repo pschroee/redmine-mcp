@@ -262,6 +262,41 @@ npm run lint:fix
 npm run build
 ```
 
+## Testing
+
+The project includes comprehensive integration tests that run against a real Redmine instance.
+
+### Setup
+
+1. Create a `.env` file in the project root:
+
+```bash
+REDMINE_URL=http://your-redmine-instance:port
+REDMINE_API_KEY=your-api-key
+```
+
+2. Run the tests:
+
+```bash
+npm test
+```
+
+### Test Coverage
+
+The test suite includes 124 tests across 7 test files:
+
+| Test File | Tests | Description |
+|-----------|-------|-------------|
+| `account.test.ts` | 1 | Current user account |
+| `core.test.ts` | 48 | Projects and Issues CRUD |
+| `metadata.test.ts` | 14 | Trackers, Statuses, Categories |
+| `relations.test.ts` | 24 | Versions and Issue Relations |
+| `wiki.test.ts` | 14 | Wiki Pages CRUD |
+| `files.test.ts` | 11 | File uploads and attachments |
+| `search.test.ts` | 12 | Global search functionality |
+
+Tests are run sequentially and share state. A global setup creates the test project with all required modules enabled, and a global teardown cleans up all test data.
+
 ## Getting your API Key
 
 1. Log into your Redmine instance
