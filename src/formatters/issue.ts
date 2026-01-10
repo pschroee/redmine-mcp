@@ -128,6 +128,22 @@ export function formatIssue(issue: RedmineIssue, lookup: NameLookup = {}, option
     lines.push("");
   }
 
+  // Changesets
+  if (issue.changesets && issue.changesets.length > 0) {
+    lines.push("## Changesets");
+    lines.push("");
+    lines.push("| Revision | Author | Date | Comment |");
+    lines.push("|----------|--------|------|---------|");
+    for (const cs of issue.changesets) {
+      const shortRev = cs.revision.length > 10 ? cs.revision.substring(0, 10) : cs.revision;
+      const author = cs.user?.name ?? "Unknown";
+      const date = formatDateShort(cs.committed_on);
+      const comment = cs.comments?.replace(/\|/g, "\\|").replace(/\n/g, " ") ?? "";
+      lines.push(`| \`${shortRev}\` | ${author} | ${date} | ${comment} |`);
+    }
+    lines.push("");
+  }
+
   // Journals (history)
   if (issue.journals && issue.journals.length > 0) {
     lines.push(formatJournals(issue.journals, lookup, {
